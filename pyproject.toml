@@ -43,6 +43,7 @@ version = "0.0.1"
 [tool.poetry.dependencies]
 python = ">=3.10"
 typer-slim = "^0.15.1"
+openpyxl = "^3.1.5"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -54,6 +55,7 @@ isort = "^5.13.2"
 
 
 [tool.poetry.scripts]
+pit38 = "pit38.cli:app"
 
 
 [tool.ruff]
@@ -67,4 +69,3 @@ quote-style = "double"
 
 [tool.ruff.lint.isort]
 combine-as-imports = true
-
