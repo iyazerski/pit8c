@@ -2,7 +2,7 @@ import typer
 
 from pit38.main import process_annual_report
 
-app = typer.Typer(help="A CLI tool that assists in preparing the PIT-38 declaration.")
+app = typer.Typer()
 
 
 @app.command("process")
