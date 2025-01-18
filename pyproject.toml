@@ -1,0 +1,70 @@
+[project]
+name = "pit38"
+authors = [
+    {name = "Ihar Yazerski", email = "ihar.yazerski@gmail.com"},
+]
+description = "A CLI tool that assists in preparing the PIT-38 declaration based on the annual tax reports from your broker"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT License"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+version = "0.0.1"
+
+
+[project.urls]
+"Homepage" = "https://github.com/iyazerski/pit38"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "pit38"
+description = "A CLI tool that assists in preparing the PIT-38 declaration based on the annual tax reports from your broker"
+authors = ["Ihar Yazerski <ihar.yazerski@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/iyazerski/pit38"
+repository = "https://github.com/iyazerski/pit38"
+license = "MIT"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+version = "0.0.1"
+
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+typer-slim = "^0.15.1"
+
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.9.2"
+ipython = "^8.31.0"
+pre-commit = "^4.0.1"
+mypy = "^1.14.1"
+isort = "^5.13.2"
+
+
+[tool.poetry.scripts]
+
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+
+
+[tool.ruff.format]
+quote-style = "double"
+
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+
