@@ -31,7 +31,7 @@ from pit38.trades_finder import match_trades_fifo
                 },
             ],
             1,
-            15.0,  # 10 (buy) + 5 (sell)
+            [15.0],  # 10 (buy) + 5 (sell)
         ),
         (
             # 2x buy, 1 partial sell
@@ -46,7 +46,7 @@ from pit38.trades_finder import match_trades_fifo
                     "CommissionValue": 5.0,
                 },
                 {
-                    "ISIN": "XYZ998",
+                    "ISIN": "XYZ999",
                     "TradeNum": "998",
                     "Direction": "buy",
                     "Date": datetime(2024, 1, 15),
@@ -65,7 +65,7 @@ from pit38.trades_finder import match_trades_fifo
                 },
             ],
             2,
-            None,
+            [11.25, 7.35],
         ),
     ],
 )
@@ -76,6 +76,5 @@ def test_match_trades_fifo(trades, positions_num, expected_total_commission):
     results = match_trades_fifo(trades)
 
     assert len(results) == positions_num
-
-    if expected_total_commission is not None:
-        assert pytest.approx(results[0]["TotalCommission"], 0.0001) == expected_total_commission
+    for i in range(positions_num):
+        assert pytest.approx(results[i]["TotalCommission"], 0.0001) == expected_total_commission[i]
