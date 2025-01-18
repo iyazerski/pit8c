@@ -4,6 +4,8 @@ from typing import Any
 import openpyxl
 from openpyxl import Workbook
 
+from pit38.models import ClosedPosition
+
 
 def read_trades_from_xlsx(filename: str, sheet_name: str | None = None) -> list[dict[str, Any]]:
     """
@@ -11,34 +13,27 @@ def read_trades_from_xlsx(filename: str, sheet_name: str | None = None) -> list[
     The first row is assumed to be the header.
     """
     wb = openpyxl.load_workbook(filename, data_only=True)
-    if sheet_name is None:
-        sheet = wb.active
-    else:
-        sheet = wb[sheet_name]
+    sheet = wb[sheet_name] if sheet_name else wb.active
 
     rows = list(sheet.rows)
     if not rows:
         return []
 
     headers = [cell.value if cell.value else "" for cell in rows[0]]
-    data_rows = rows[1:]
-
-    out_data = []
-    for row in data_rows:
+    raw_data = []
+    for row in rows[1:]:
         row_dict = {}
         for col_idx, cell in enumerate(row):
-            header = headers[col_idx].strip() if col_idx < len(headers) else f"Unlabeled_{col_idx}"
-            row_dict[header] = cell.value
-        out_data.append(row_dict)
+            if col_idx < len(headers):
+                header = headers[col_idx].strip()
+                row_dict[header] = cell.value
+        raw_data.append(row_dict)
+    return raw_data
 
-    return out_data
 
-
-def write_trades_to_xlsx(closed_positions: list[dict[str, Any]], out_filename: str) -> None:
+def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: str) -> None:
     """
-    Writes the matched buy-sell trades to a new XLSX file.
-    Columns required:
-      ISIN, Ticker, Currency, BuyAmount, BuyDate, SellAmount, SellDate, TotalCommission
+    Write the closed positions to XLSX.
     """
     wb = Workbook()
     ws = wb.active
@@ -48,6 +43,7 @@ def write_trades_to_xlsx(closed_positions: list[dict[str, Any]], out_filename: s
         "ISIN",
         "Ticker",
         "Currency",
+        "Quantity",
         "BuyAmount",
         "BuyDate",
         "SellAmount",
@@ -56,26 +52,24 @@ def write_trades_to_xlsx(closed_positions: list[dict[str, Any]], out_filename: s
     ]
     ws.append(headers)
 
-    # sort by ISIN, SellDate for clarity
-    sorted_positions = sorted(closed_positions, key=lambda x: (x["ISIN"], x["SellDate"]))
+    # Sort for readability
+    sorted_positions = sorted(closed_positions, key=lambda cp: (cp.ISIN, cp.SellDate))
 
     for pos in sorted_positions:
-        buy_date_str = (
-            pos["BuyDate"].strftime("%Y-%m-%d") if isinstance(pos["BuyDate"], datetime) else str(pos["BuyDate"])
-        )
-        sell_date_str = (
-            pos["SellDate"].strftime("%Y-%m-%d") if isinstance(pos["SellDate"], datetime) else str(pos["SellDate"])
-        )
+        # Convert date -> YYYY-MM-DD
+        buy_date_str = pos.BuyDate.strftime("%Y-%m-%d") if isinstance(pos.BuyDate, datetime) else str(pos.BuyDate)
+        sell_date_str = pos.SellDate.strftime("%Y-%m-%d") if isinstance(pos.SellDate, datetime) else str(pos.SellDate)
 
         row = [
-            pos.get("ISIN", ""),
-            pos.get("Ticker", ""),
-            pos.get("Currency", ""),
-            round(pos.get("BuyAmount", 0.0), 4),
+            pos.ISIN,
+            pos.Ticker,
+            pos.Currency,
+            str(pos.Quantity),
+            str(pos.BuyAmount),
             buy_date_str,
-            round(pos.get("SellAmount", 0.0), 4),
+            str(pos.SellAmount),
             sell_date_str,
-            round(pos.get("TotalCommission", 0.0), 4),
+            str(pos.TotalCommission),
         ]
         ws.append(row)
 
