@@ -4,7 +4,7 @@ from decimal import Decimal
 import pytest
 
 from pit38.models import ClosedPosition, DirectionEnum, Trade
-from pit38.trades_matcher import match_trades_fifo
+from pit38.positions.trades_matcher import match_trades_fifo
 
 
 @pytest.mark.parametrize(
