@@ -3,6 +3,7 @@ from typing import Any
 import openpyxl
 from openpyxl import Workbook
 
+from pit38.io.utils import serialize_decimal
 from pit38.models import ClosedPosition
 
 
@@ -65,14 +66,14 @@ def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: s
             pos.ticker,
             pos.currency,
             buy_date_str,
-            str(pos.quantity),
-            str(pos.buy_amount),
-            str(pos.buy_commission),
-            str(pos.buy_exchange_rate),
+            serialize_decimal(pos.quantity),
+            serialize_decimal(pos.buy_amount),
+            serialize_decimal(pos.buy_commission),
+            serialize_decimal(pos.buy_exchange_rate),
             sell_date_str,
-            str(pos.sell_amount),
-            str(pos.sell_commission),
-            str(pos.sell_exchange_rate),
+            serialize_decimal(pos.sell_amount),
+            serialize_decimal(pos.sell_commission),
+            serialize_decimal(pos.sell_exchange_rate),
         ]
         ws.append(row)
 
