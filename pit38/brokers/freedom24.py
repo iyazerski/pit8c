@@ -55,17 +55,17 @@ class Freedom24Adapter(BrokerAdapter):
                 continue
 
             trade_obj = Trade(
-                ISIN=isin_raw,
-                Ticker=ticker_raw,
-                Currency=currency_raw,
-                Direction=DirectionEnum(direction_raw),
-                Date=dt,
-                Quantity=Decimal(str(qty_val)),
-                Amount=Decimal(str(amt_val)),
-                CommissionValue=comm_value,  # уже Decimal
-                CommissionCurrency=comm_curr,
-                Price=Decimal(str(price_val)) if price_val else None,
-                TradeNum=trade_num,
+                isin=isin_raw,
+                ticker=ticker_raw,
+                currency=currency_raw,
+                direction=DirectionEnum(direction_raw),
+                date=dt,
+                quantity=Decimal(str(qty_val)),
+                amount=Decimal(str(amt_val)),
+                commission_value=comm_value,
+                commission_currency=comm_curr,
+                price=Decimal(str(price_val)) if price_val else None,
+                trade_num=trade_num,
             )
 
             trades.append(trade_obj)

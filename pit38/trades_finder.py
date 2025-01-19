@@ -9,7 +9,7 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
     Output: List[ClosedPosition], describing each partial/full closure.
     """
 
-    trades_sorted = sorted(trades, key=lambda t: (t.ISIN, t.Date, t.TradeNum))
+    trades_sorted = sorted(trades, key=lambda t: (t.isin, t.date, t.trade_num))
 
     # { isin: [dict with remaining_qty, buy_date, buy_amount, comm_value, ...], ... }
     open_positions: dict[str, list[dict]] = {}
@@ -17,37 +17,32 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
     results: list[ClosedPosition] = []
 
     for trade in trades_sorted:
-        if not trade.ISIN:
+        if not trade.isin:
             continue
 
-        if trade.Direction == DirectionEnum.buy:
-            if trade.ISIN not in open_positions:
-                open_positions[trade.ISIN] = []
-            open_positions[trade.ISIN].append(
+        if trade.direction == DirectionEnum.buy:
+            if trade.isin not in open_positions:
+                open_positions[trade.isin] = []
+            open_positions[trade.isin].append(
                 {
-                    "remaining_qty": trade.Quantity,
-                    "buy_date": trade.Date,
-                    "buy_amount": trade.Amount,
-                    "buy_comm_value": trade.CommissionValue,
-                    "buy_comm_currency": trade.CommissionCurrency,
-                    "ticker": trade.Ticker,
-                    "currency": trade.Currency,
+                    "remaining_qty": trade.quantity,
+                    "buy_date": trade.date,
+                    "buy_amount": trade.amount,
+                    "buy_comm_value": trade.commission_value,
+                    "buy_comm_currency": trade.commission_currency,
+                    "ticker": trade.ticker,
+                    "currency": trade.currency,
+                    # "buy_exchange_rate": buy_rate,
                 }
             )
 
-        elif trade.Direction == DirectionEnum.sell:
-            if trade.ISIN not in open_positions:
+        elif trade.direction == DirectionEnum.sell:
+            if trade.isin not in open_positions:
                 continue
 
-            to_close = trade.Quantity
-            sell_qty = trade.Quantity
-            sell_amount = trade.Amount
-            sell_date = trade.Date
-            sell_comm_value = trade.CommissionValue
-            ticker = trade.Ticker
-            currency = trade.Currency
+            to_close = trade.quantity
+            fifo_queue = open_positions[trade.isin]
 
-            fifo_queue = open_positions[trade.ISIN]
             while to_close > 0 and fifo_queue:
                 current_buy = fifo_queue[0]
                 if current_buy["remaining_qty"] <= 0:
@@ -62,21 +57,22 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
                 buy_amount_portion = current_buy["buy_amount"] * portion
                 buy_comm_portion = current_buy["buy_comm_value"] * portion
 
-                sell_amount_portion = sell_amount * (closed_lot / sell_qty)
-                sell_comm_portion = sell_comm_value * (closed_lot / sell_qty)
-
-                total_commission = buy_comm_portion + sell_comm_portion
+                sell_amount_portion = trade.amount * (closed_lot / trade.quantity)
+                sell_comm_portion = trade.commission_value * (closed_lot / trade.quantity)
 
                 closed_pos = ClosedPosition(
-                    ISIN=trade.ISIN,
-                    Ticker=ticker,
-                    Currency=currency,
-                    BuyDate=current_buy["buy_date"],
-                    Quantity=closed_lot,
-                    BuyAmount=buy_amount_portion,
-                    SellDate=sell_date,
-                    SellAmount=sell_amount_portion,
-                    TotalCommission=total_commission,
+                    isin=trade.isin,
+                    ticker=trade.ticker,
+                    currency=trade.currency,
+                    buy_date=current_buy["buy_date"],
+                    quantity=closed_lot,
+                    buy_amount=buy_amount_portion,
+                    sell_date=trade.date,
+                    sell_amount=sell_amount_portion,
+                    buy_commission=buy_comm_portion,
+                    sell_commission=sell_comm_portion,
+                    # buy_exchange_rate=current_buy["buy_exchange_rate"],
+                    # sell_exchange_rate=sell_rate
                 )
                 results.append(closed_pos)
 

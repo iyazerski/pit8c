@@ -13,21 +13,20 @@ class DirectionEnum(str, Enum):
 
 class Trade(BaseModel):
     """
-    A standardized representation of a single trade.
-    All brokers' adapters must convert raw XLSX rows into this model.
+    Standardized trade model for input from broker adapters.
     """
 
-    ISIN: str
-    Ticker: str
-    Currency: str
-    TradeNum: int
-    Direction: DirectionEnum
-    Date: datetime
-    Quantity: Decimal
-    Amount: Decimal
-    CommissionValue: Decimal
-    CommissionCurrency: str = Field(default="")
-    Price: Optional[Decimal] = Field(default=None)
+    isin: str
+    ticker: str
+    currency: str
+    direction: DirectionEnum
+    date: datetime
+    quantity: Decimal
+    amount: Decimal
+    commission_value: Decimal
+    commission_currency: str = Field(default="")
+    price: Optional[Decimal] = Field(default=None)
+    trade_num: int = Field(default=0)
 
 
 class ClosedPosition(BaseModel):
@@ -35,12 +34,19 @@ class ClosedPosition(BaseModel):
     Represents a closed position after matching a buy-lot with a sell-lot.
     """
 
-    ISIN: str
-    Ticker: str
-    Currency: str
-    BuyDate: datetime
-    Quantity: Decimal
-    BuyAmount: Decimal
-    SellDate: datetime
-    SellAmount: Decimal
-    TotalCommission: Decimal
+    isin: str
+    ticker: str
+    currency: str
+
+    buy_date: datetime
+    quantity: Decimal
+    buy_amount: Decimal
+
+    sell_date: datetime
+    sell_amount: Decimal
+
+    buy_commission: Decimal = Field(default=Decimal("0"))
+    sell_commission: Decimal = Field(default=Decimal("0"))
+
+    buy_exchange_rate: Decimal = Field(default=Decimal("0"))
+    sell_exchange_rate: Decimal = Field(default=Decimal("0"))

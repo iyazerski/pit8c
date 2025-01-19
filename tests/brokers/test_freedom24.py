@@ -75,10 +75,10 @@ def test_freedom24_adapter_minimal(
     assert len(trades) == 1, "Adapter should return exactly one Trade for one raw row"
     trade = trades[0]
 
-    assert trade.ISIN == expected_isin
-    assert trade.Direction == expected_dir
-    assert trade.Date == expected_date
-    assert trade.Quantity == expected_quantity
-    assert trade.Amount == expected_amount
-    assert trade.CommissionValue == expected_comm_value
-    assert trade.TradeNum == expected_trade_num
+    assert trade.isin == expected_isin
+    assert trade.direction == expected_dir
+    assert trade.date == expected_date
+    assert trade.quantity == expected_quantity
+    assert trade.amount == expected_amount
+    assert trade.commission_value == expected_comm_value
+    assert trade.trade_num == expected_trade_num

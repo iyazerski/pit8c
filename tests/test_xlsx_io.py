@@ -12,15 +12,14 @@ from pit38.xlsx_io import read_trades_from_xlsx, write_trades_to_xlsx
     [
         [
             ClosedPosition(
-                ISIN="ABC123",
-                Ticker="TCK1",
-                Currency="USD",
-                BuyDate=datetime(2024, 1, 1),
-                Quantity=Decimal("10"),
-                BuyAmount=Decimal("1000"),
-                SellDate=datetime(2024, 1, 2),
-                SellAmount=Decimal("1200"),
-                TotalCommission=Decimal("15"),
+                isin="ABC123",
+                ticker="TCK1",
+                currency="USD",
+                buy_date=datetime(2024, 1, 1),
+                quantity=Decimal("10"),
+                buy_amount=Decimal("1000"),
+                sell_date=datetime(2024, 1, 2),
+                sell_amount=Decimal("1200"),
             )
         ],
     ],
@@ -36,11 +35,10 @@ def test_write_and_read_xlsx(tmp_path, closed_positions):
 
     for i, row in enumerate(data):
         cp = closed_positions[i]
-        assert row["ISIN"] == cp.ISIN
-        assert row["Ticker"] == cp.Ticker
-        assert row["Currency"] == cp.Currency
-        assert row["BuyDate"] == cp.BuyDate.strftime("%Y-%m-%d")
-        assert row["Quantity"] == str(cp.Quantity)
-        assert row["BuyAmount"] == str(cp.BuyAmount)
-        assert row["SellAmount"] == str(cp.SellAmount)
-        assert row["TotalCommission"] == str(cp.TotalCommission)
+        assert row["ISIN"] == cp.isin
+        assert row["Ticker"] == cp.ticker
+        assert row["Currency"] == cp.currency
+        assert row["BuyDate"] == cp.buy_date.strftime("%Y-%m-%d")
+        assert row["Quantity"] == str(cp.quantity)
+        assert row["BuyAmount"] == str(cp.buy_amount)
+        assert row["SellAmount"] == str(cp.sell_amount)

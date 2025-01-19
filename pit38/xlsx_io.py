@@ -1,4 +1,3 @@
-from datetime import datetime
 from typing import Any
 
 import openpyxl
@@ -33,7 +32,7 @@ def read_trades_from_xlsx(filename: str, sheet_name: str | None = None) -> list[
 
 def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: str) -> None:
     """
-    Write the closed positions to XLSX.
+    Writes the matched buy-sell trades into an XLSX file
     """
     wb = Workbook()
     ws = wb.active
@@ -43,33 +42,37 @@ def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: s
         "ISIN",
         "Ticker",
         "Currency",
+        "BuyDate",
         "Quantity",
         "BuyAmount",
-        "BuyDate",
-        "SellAmount",
+        "BuyCommission",
+        "BuyExchangeRate",
         "SellDate",
-        "TotalCommission",
+        "SellAmount",
+        "SellCommission",
+        "SellExchangeRate",
     ]
     ws.append(headers)
 
-    # Sort for readability
-    sorted_positions = sorted(closed_positions, key=lambda cp: (cp.ISIN, cp.SellDate))
+    sorted_positions = sorted(closed_positions, key=lambda cp: (cp.isin, cp.sell_date))
 
     for pos in sorted_positions:
-        # Convert date -> YYYY-MM-DD
-        buy_date_str = pos.BuyDate.strftime("%Y-%m-%d") if isinstance(pos.BuyDate, datetime) else str(pos.BuyDate)
-        sell_date_str = pos.SellDate.strftime("%Y-%m-%d") if isinstance(pos.SellDate, datetime) else str(pos.SellDate)
+        buy_date_str = pos.buy_date.strftime("%Y-%m-%d")
+        sell_date_str = pos.sell_date.strftime("%Y-%m-%d")
 
         row = [
-            pos.ISIN,
-            pos.Ticker,
-            pos.Currency,
-            str(pos.Quantity),
-            str(pos.BuyAmount),
+            pos.isin,
+            pos.ticker,
+            pos.currency,
             buy_date_str,
-            str(pos.SellAmount),
+            str(pos.quantity),
+            str(pos.buy_amount),
+            str(pos.buy_commission),
+            str(pos.buy_exchange_rate),
             sell_date_str,
-            str(pos.TotalCommission),
+            str(pos.sell_amount),
+            str(pos.sell_commission),
+            str(pos.sell_exchange_rate),
         ]
         ws.append(row)
 
