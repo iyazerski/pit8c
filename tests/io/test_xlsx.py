@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
+from pit38.io.xlsx import read_trades_from_xlsx, write_trades_to_xlsx
 from pit38.models import ClosedPosition
-from pit38.xlsx_io import read_trades_from_xlsx, write_trades_to_xlsx
 
 
 @pytest.mark.parametrize(

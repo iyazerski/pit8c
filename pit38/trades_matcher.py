@@ -32,7 +32,6 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
                     "buy_comm_currency": trade.commission_currency,
                     "ticker": trade.ticker,
                     "currency": trade.currency,
-                    # "buy_exchange_rate": buy_rate,
                 }
             )
 
@@ -71,8 +70,6 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
                     sell_amount=sell_amount_portion,
                     buy_commission=buy_comm_portion,
                     sell_commission=sell_comm_portion,
-                    # buy_exchange_rate=current_buy["buy_exchange_rate"],
-                    # sell_exchange_rate=sell_rate
                 )
                 results.append(closed_pos)
 
