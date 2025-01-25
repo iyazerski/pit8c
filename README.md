@@ -22,7 +22,8 @@ Currently, it supports **Freedom24**, but the architecture is designed to be ext
 2. **Freedom24 XLSX Support**: Reads Freedom24’s Excel annual tax report files and converts them into a standard format.
 3. **FIFO Matching**: Automatically applies the First-In-First-Out logic to match buy and sell trades (including partial closures).
 4. **Commission Handling**: Splits and sums commissions from both buy and sell sides, proportionally for partial trades.
-5. **XLSX Output**: Exports final summarized results (buy date, buy amount, sell date, sell amount, total commission) in a standardized XLSX file.
+5. **PIT-8C**: Generates PIT-8C PDF file with the income and costs values calculated based on the trades provided.
+6. **Audit**: Exports all closed positions (buy date, buy amount, sell date, sell amount, total commission) in a XLSX file for audit.
 
 ---
 
@@ -71,28 +72,29 @@ Currently, it supports **Freedom24**, but the architecture is designed to be ext
 
 ### Processing an Annual Report
 
-To process your annual tax report (from Freedom24), use:
+To process your annual tax report (.xlsx file with all the trades made during the year), use:
 
 ```bash
-pit38 freedom24 /path/to/input_file.xlsx /path/to/output_file.xlsx
+pit38 <broker> <tax_report_file>
 ```
 
-- **freedom24**: the broker’s name (lowercase).
-- **/path/to/input_file.xlsx**: the XLSX file downloaded from Freedom24 (or another supported broker, once implemented).
-- **/path/to/output_file.xlsx**: the resulting XLSX file with matched buy-sell trades and commissions.
+- **broker**: the broker’s name (lowercase).
+- **tax_report_file**: the XLSX file with all your trades downloaded from the supported broker.
 
 The tool will:
 
 1. Read the broker’s XLSX file.
-2. Convert all trades (buy and sell) into an internal unified structure.
+2. Convert all trades (buy and sell) into an internal unified structure based on ISIN and currency.
 3. Apply FIFO matching to determine partial closures.
-4. Compute total commissions for each matched position.
-5. Write the finalized trades into `output_file.xlsx`.
+4. Compute income and costs for each matched position.
+5. Generate PIT-8C PDF report and save it near the input file.
+6. Print D section of PIT-8C report to console.
+7. Write the closed positions near the input file (for audit).
 
 **Example**:
 
 ```bash
-pit38 process freedom24 annual_report_2024.xlsx closed_positions_2024.xlsx
+pit38 freedom24 annual_report_2024.xlsx
 ```
 
 ---
@@ -101,20 +103,12 @@ pit38 process freedom24 annual_report_2024.xlsx closed_positions_2024.xlsx
 
 We use [pytest](https://docs.pytest.org/) for testing and [Typer Testing](https://typer.tiangolo.com/tutorial/testing/) for CLI tests.
 
-1. From the project root:
+From the project root:
 
-   ```bash
-   poetry install
-   poetry run pytest
-   ```
-
-2. Tests are located in the `tests/` directory and include:
-
-   - **CLI tests**: `test_cli.py`
-   - **FIFO logic tests**: `test_trades_finder.py`
-   - **XLSX read/write tests**: `test_xlsx_io.py`
-
-All tests use the built-in `tmp_path` fixture to handle temporary files.
+```bash
+poetry install
+poetry run pytest
+```
 
 ---
 
