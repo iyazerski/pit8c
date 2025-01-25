@@ -52,3 +52,4 @@ class ClosedPosition(BaseModel):
     sell_exchange_rate: Decimal = Field(default=Decimal("0"))
 
     profit: Decimal = Field(default=Decimal("0"))
+    profit_pln: Decimal = Field(default=Decimal("0"))

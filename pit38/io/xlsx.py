@@ -52,6 +52,7 @@ def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: s
         "SellAmount",
         "SellCommission",
         "SellExchangeRate",
+        "Profit",
         "ProfitPLN",
     ]
     ws.append(headers)
@@ -76,6 +77,7 @@ def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: s
             serialize_decimal(pos.sell_commission),
             serialize_decimal(pos.sell_exchange_rate),
             serialize_decimal(pos.profit),
+            serialize_decimal(pos.profit_pln),
         ]
         ws.append(row)
 
