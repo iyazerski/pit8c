@@ -1,3 +1,4 @@
+from pathlib import Path
 from typing import Any
 
 import openpyxl
@@ -7,12 +8,12 @@ from pit38.io.utils import serialize_decimal
 from pit38.models import ClosedPosition
 
 
-def read_trades_from_xlsx(filename: str, sheet_name: str | None = None) -> list[dict[str, Any]]:
+def read_trades_from_xlsx(file: Path, sheet_name: str | None = None) -> list[dict[str, Any]]:
     """
     Reads an XLSX file (entire sheet) into a list of dictionaries (raw data).
     The first row is assumed to be the header.
     """
-    wb = openpyxl.load_workbook(filename, data_only=True)
+    wb = openpyxl.load_workbook(file, data_only=True)
     sheet = wb[sheet_name] if sheet_name else wb.active
 
     rows = list(sheet.rows)
@@ -31,7 +32,7 @@ def read_trades_from_xlsx(filename: str, sheet_name: str | None = None) -> list[
     return raw_data
 
 
-def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: str) -> None:
+def write_closed_positions_to_xlsx(closed_positions: list[ClosedPosition], file: Path) -> None:
     """
     Writes the matched buy-sell trades into an XLSX file
     """
@@ -83,4 +84,4 @@ def write_trades_to_xlsx(closed_positions: list[ClosedPosition], out_filename: s
         ]
         ws.append(row)
 
-    wb.save(out_filename)
+    wb.save(file)

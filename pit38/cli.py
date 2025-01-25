@@ -2,22 +2,22 @@ from pathlib import Path
 
 import typer
 
+from pit38.brokers.base import SupportedBroker
 from pit38.main import process_annual_report
 
 app = typer.Typer()
 
 
-@app.command("process")
-def process_command(
-    broker: str = typer.Argument(..., help="Broker name (e.g. freedom24)"),
-    input_file: Path = typer.Argument(..., help="Path to the XLSX input file from your broker"),
-    output_file: Path = typer.Argument(..., help="Output XLSX file where results will be saved"),
+@app.command("main")
+def main(
+    broker: SupportedBroker = typer.Argument(..., help="Broker name"),
+    tax_report_file: Path = typer.Argument(..., help="Path to the annual tax report from your broker"),
 ):
     """
-    Process the annual tax report using the specified BROKER adapter,
-    reading INPUT_FILE and writing to OUTPUT_FILE in the standardized format.
+    Process the annual tax report using the specified broker adapter,
+    reading tax_report_file and generating PIT-8C and .xlsx file with all closed positions (for audit).
     """
-    process_annual_report(broker, input_file, output_file)
+    process_annual_report(broker, tax_report_file)
 
 
 if __name__ == "__main__":
