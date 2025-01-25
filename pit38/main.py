@@ -4,6 +4,7 @@ from pit38.brokers import freedom24
 from pit38.exchange.rates import fill_exchange_rates
 from pit38.io.xlsx import read_trades_from_xlsx, write_trades_to_xlsx
 from pit38.positions.profit_calculator import calculate_profit
+from pit38.positions.reports import print_pit8c
 from pit38.positions.trades_matcher import match_trades_fifo
 
 
@@ -26,8 +27,11 @@ def process_annual_report(broker_name: str, input_file: Path, output_file: Path)
     # fill exchange rates
     fill_exchange_rates(closed_positions)
 
-    # calculate profit
+    # calculate income and costs
     calculate_profit(closed_positions)
+
+    # print PIT-8C
+    print_pit8c(closed_positions)
 
     # write the result to XLSX
     write_trades_to_xlsx(closed_positions, output_file.resolve().as_posix())

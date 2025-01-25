@@ -52,4 +52,7 @@ class ClosedPosition(BaseModel):
     sell_exchange_rate: Decimal = Field(default=Decimal("0"))
 
     profit: Decimal = Field(default=Decimal("0"))
-    profit_pln: Decimal = Field(default=Decimal("0"))
+
+    # fields required for PIT-8C and PIT-38
+    income_pln: Decimal = Field(default=Decimal("0"))
+    costs_pln: Decimal = Field(default=Decimal("0"))

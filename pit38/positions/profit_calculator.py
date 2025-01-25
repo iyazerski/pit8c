@@ -5,30 +5,19 @@ from pit38.models import ClosedPosition
 
 def calculate_profit(closed_positions: list[ClosedPosition]) -> list[ClosedPosition]:
     """
-    Compute the profit in PLN for each closed position,
-    taking into account exchange rates and commissions.
-
-    Formula:
-      buy_value_pln  = (buy_amount  + buy_commission)  * buy_exchange_rate
-      sell_value_pln = (sell_amount - sell_commission) * sell_exchange_rate
-      profit_pln     = sell_value_pln - buy_value_pln
-
-    The profit is stored in the 'profit' field of the ClosedPosition.
+    Compute the income and costs in PLN for each closed position,
+    taking into account exchange rates.
     """
-    total_profit = Decimal("0.0")
-
     for cp in closed_positions:
-        # (BuyAmount + BuyCommission) * BuyExchangeRate
-        buy_value = cp.buy_amount + cp.buy_commission
-        buy_value_pln = buy_value * cp.buy_exchange_rate
+        # profit in trade currency
+        cp.profit = cp.sell_amount - cp.buy_amount
 
-        # (SellAmount - SellCommission) * SellExchangeRate
-        sell_value = cp.sell_amount - cp.sell_commission
-        sell_value_pln = sell_value * cp.sell_exchange_rate
+        # Income (Przychód): Sell Amount * Sell Exchange Rate
+        cp.income_pln = (cp.sell_amount * cp.sell_exchange_rate).quantize(Decimal("0.01"))
 
-        cp.profit = sell_value - buy_value
-        cp.profit_pln = sell_value_pln - buy_value_pln
-        total_profit += cp.profit_pln
+        # Costs (Koszty): (Buy Amount + Buy Commission) * Buy Rate + Sell Commission * Sell Rate
+        buy_total_pln = (cp.buy_amount + cp.buy_commission) * cp.buy_exchange_rate
+        sell_comm_pln = cp.sell_commission * cp.sell_exchange_rate
+        cp.costs_pln = (buy_total_pln + sell_comm_pln).quantize(Decimal("0.01"))
 
-    print(f"Total profit: {total_profit} PLN")
     return closed_positions
