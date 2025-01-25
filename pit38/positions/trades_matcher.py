@@ -9,21 +9,22 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
     Output: List[ClosedPosition], describing each partial/full closure.
     """
 
-    trades_sorted = sorted(trades, key=lambda t: (t.isin, t.date, t.trade_num))
+    trades_sorted = sorted(trades, key=lambda t: (t.isin, t.currency, t.trade_num))
 
-    # { isin: [dict with remaining_qty, buy_date, buy_amount, comm_value, ...], ... }
-    open_positions: dict[str, list[dict]] = {}
+    # { (isin, currency): [dict with remaining_qty, buy_date, buy_amount, comm_value, ...], ... }
+    open_positions: dict[tuple[str, str], list[dict]] = {}
 
     results: list[ClosedPosition] = []
 
     for trade in trades_sorted:
-        if not trade.isin:
+        if not trade.isin or not trade.currency:
             continue
 
+        key = (trade.isin, trade.currency)
         if trade.direction == DirectionEnum.buy:
-            if trade.isin not in open_positions:
-                open_positions[trade.isin] = []
-            open_positions[trade.isin].append(
+            if key not in open_positions:
+                open_positions[key] = []
+            open_positions[key].append(
                 {
                     "remaining_qty": trade.quantity,
                     "buy_date": trade.date,
@@ -36,11 +37,11 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
             )
 
         elif trade.direction == DirectionEnum.sell:
-            if trade.isin not in open_positions:
+            if key not in open_positions:
                 continue
 
             to_close = trade.quantity
-            fifo_queue = open_positions[trade.isin]
+            fifo_queue = open_positions[key]
 
             while to_close > 0 and fifo_queue:
                 current_buy = fifo_queue[0]
