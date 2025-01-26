@@ -41,11 +41,11 @@ def process_annual_report(broker: SupportedBroker, tax_report_file: Path) -> Non
     calculate_profit(closed_positions)
 
     # print PIT-8C
-    pit_8c_path = Path(f"{tax_report_file.stem}_pit_8c.pdf")
+    pit_8c_path = tax_report_file.parent / f"{tax_report_file.stem}_pit_8c.pdf"
     generate_pit_8c(closed_positions, pit_8c_path)
 
     # write the result to XLSX
-    closed_positions_path = Path(f"{tax_report_file.stem}_closed_positions.xlsx")
+    closed_positions_path = tax_report_file.parent / f"{tax_report_file.stem}_closed_positions.xlsx"
     write_closed_positions_to_xlsx(closed_positions, closed_positions_path)
 
     print(f"Done! Generated PIT-8C to '{pit_8c_path}' and saved closed positions to '{closed_positions_path}'")
