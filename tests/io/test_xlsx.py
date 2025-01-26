@@ -27,7 +27,7 @@ from pit38.models import ClosedPosition
 def test_write_and_read_xlsx(tmp_path, closed_positions):
     test_file = tmp_path / "test_output.xlsx"
 
-    write_closed_positions_to_xlsx(closed_positions, test_file)
+    write_closed_positions_to_xlsx(closed_positions, [], test_file)
     assert test_file.exists()
 
     data = read_trades_from_xlsx(test_file)

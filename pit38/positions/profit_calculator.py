@@ -3,11 +3,15 @@ from decimal import Decimal
 from pit38.models import ClosedPosition
 
 
-def calculate_profit(closed_positions: list[ClosedPosition]) -> list[ClosedPosition]:
+def calculate_profit(closed_positions: list[ClosedPosition]) -> tuple[list[ClosedPosition], list[ClosedPosition]]:
     """
     Compute the income and costs in PLN for each closed position,
     taking into account exchange rates.
     """
+
+    profitable_positions: list[ClosedPosition] = []
+    loss_positions: list[ClosedPosition] = []
+
     for cp in closed_positions:
         # profit in trade currency
         cp.profit = cp.sell_amount - cp.buy_amount
@@ -20,4 +24,9 @@ def calculate_profit(closed_positions: list[ClosedPosition]) -> list[ClosedPosit
         sell_comm_pln = cp.sell_commission * cp.sell_exchange_rate
         cp.costs_pln = (buy_total_pln + sell_comm_pln).quantize(Decimal("0.01"))
 
-    return closed_positions
+        if cp.income_pln - cp.costs_pln >= 0:
+            profitable_positions.append(cp)
+        else:
+            loss_positions.append(cp)
+
+    return profitable_positions, loss_positions

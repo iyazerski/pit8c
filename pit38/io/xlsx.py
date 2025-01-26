@@ -32,13 +32,16 @@ def read_trades_from_xlsx(file: Path, sheet_name: str | None = None) -> list[dic
     return raw_data
 
 
-def write_closed_positions_to_xlsx(closed_positions: list[ClosedPosition], file: Path) -> None:
+def write_closed_positions_to_xlsx(
+    profitable_positions: list[ClosedPosition], loss_positions: list[ClosedPosition], file: Path
+) -> None:
     """
     Writes the matched buy-sell trades into an XLSX file
     """
     wb = Workbook()
-    ws = wb.active
-    ws.title = "Closed Positions"
+    wb.remove(wb.active)
+    profit_ws = wb.create_sheet("Profit")
+    loss_ws = wb.create_sheet("Loss")
 
     headers = [
         "ISIN",
@@ -57,24 +60,20 @@ def write_closed_positions_to_xlsx(closed_positions: list[ClosedPosition], file:
         "IncomePLN",
         "CostsPLN",
     ]
-    ws.append(headers)
+    for ws in [profit_ws, loss_ws]:
+        ws.append(headers)
 
-    sorted_positions = sorted(closed_positions, key=lambda cp: (cp.isin, cp.sell_date))
-
-    for pos in sorted_positions:
-        buy_date_str = pos.buy_date.strftime("%Y-%m-%d")
-        sell_date_str = pos.sell_date.strftime("%Y-%m-%d")
-
-        row = [
+    def create_row(pos: ClosedPosition) -> list:
+        return [
             pos.isin,
             pos.ticker,
             pos.currency,
-            buy_date_str,
+            pos.buy_date.strftime("%Y-%m-%d"),
             serialize_decimal(pos.quantity),
             serialize_decimal(pos.buy_amount),
             serialize_decimal(pos.buy_commission),
             serialize_decimal(pos.buy_exchange_rate),
-            sell_date_str,
+            pos.sell_date.strftime("%Y-%m-%d"),
             serialize_decimal(pos.sell_amount),
             serialize_decimal(pos.sell_commission),
             serialize_decimal(pos.sell_exchange_rate),
@@ -82,6 +81,11 @@ def write_closed_positions_to_xlsx(closed_positions: list[ClosedPosition], file:
             serialize_decimal(pos.income_pln),
             serialize_decimal(pos.costs_pln),
         ]
-        ws.append(row)
+
+    for position in sorted(profitable_positions, key=lambda x: (x.isin, x.sell_date)):
+        profit_ws.append(create_row(position))
+
+    for position in sorted(loss_positions, key=lambda x: (x.isin, x.sell_date)):
+        loss_ws.append(create_row(position))
 
     wb.save(file)
