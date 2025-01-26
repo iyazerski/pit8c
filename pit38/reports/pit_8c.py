@@ -16,22 +16,21 @@ def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
     for cp in closed_positions:
         total_income += cp.income_pln
         total_costs += cp.costs_pln
-    net_income = total_income - total_costs
+    profit = total_income - total_costs
 
     # print txt version of PIT-8C to console
     pit_8c_template = PIT_8C_TXT.read_text().strip()
-    print(pit_8c_template.format(total_income=str(total_income), costs=str(total_costs), net_income=str(net_income)))
+    print(pit_8c_template.format(total_income=str(total_income), costs=str(total_costs), profit=str(profit)))
 
     # load PDF
     reader = PdfReader(PIT_8C_PDF)
     writer = PdfWriter()
 
     # fields mapping
-    fields = {"35": str(total_income), "36": str(total_costs), "37": str(net_income)}
+    fields = {"35_income": str(total_income), "36_costs": str(total_costs), "37_profit": str(profit)}
 
     # copy pages and update form fields
-    for page in reader.pages:
-        writer.add_page(page)
+    writer.clone_reader_document_root(reader)
 
     # update fields on the first page
     writer.update_page_form_field_values(writer.pages[0], fields)
