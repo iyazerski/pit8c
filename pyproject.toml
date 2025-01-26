@@ -42,11 +42,11 @@ version = "0.0.1"
 
 [tool.poetry.dependencies]
 python = ">=3.10"
-typer-slim = "^0.15.1"
 openpyxl = "^3.1.5"
 pydantic = "^2.10.5"
 requests = "^2.32.3"
 pypdf = "^5.1.0"
+typer = {extras = ["all"], version = "^0.15.1"}
 
 
 [tool.poetry.group.dev.dependencies]
