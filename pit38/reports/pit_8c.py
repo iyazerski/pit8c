@@ -22,19 +22,19 @@ def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
     pit_8c_template = PIT_8C_TXT.read_text().strip()
     print(pit_8c_template.format(total_income=str(total_income), costs=str(total_costs), net_income=str(net_income)))
 
-    # Load PDF
+    # load PDF
     reader = PdfReader(PIT_8C_PDF)
     writer = PdfWriter()
 
-    # Data mapping (field names must match PDF form fields)
-    data = {"total_income": str(total_income), "total_costs": str(total_costs), "net_income": str(net_income)}
+    # fields mapping
+    fields = {"35": str(total_income), "36": str(total_costs), "37": str(net_income)}
 
-    # Copy pages and update form fields
+    # copy pages and update form fields
     for page in reader.pages:
         writer.add_page(page)
 
-    # Update fields on the first page (adjust if fields are on other pages)
-    writer.update_page_form_field_values(writer.pages[0], data)
+    # update fields on the first page
+    writer.update_page_form_field_values(writer.pages[0], fields)
 
     # Save filled PDF
     with open(file, "wb") as f:
