@@ -1,13 +1,14 @@
 # PIT-38
 
-**PIT-38** is a command-line tool that assists you in preparing the Polish PIT-38 declaration based on annual tax reports provided by your broker.
-Currently, it supports **Freedom24**, but the architecture is designed to be extended for other brokers in the future.
+**PIT-38** is a command-line tool that assists you in preparing the Polish [PIT-38](https://www.pit.pl/pit-38/)
+declaration for investment income. It transforms raw broker reports into tax-ready documents by handling
+complex calculations, currency conversions, and FIFO trade matching - all while adhering to Polish tax regulations.
 
 ---
 
 ## Table of Contents
 
-- [Features](#features)
+- [Example Use Case](#example-use-case)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Testing](#testing)
@@ -16,14 +17,26 @@ Currently, it supports **Freedom24**, but the architecture is designed to be ext
 
 ---
 
-## Features
+## Example Use Case
+*Marta, a Polish investor, made 200+ stock trades in 2024 through Freedom24, including US and EU stocks. To file her PIT-38, she needs to:*
+1. Match each sale to its original purchase
+2. Convert all foreign amounts to PLN using NBP rates from transaction dates
+3. Calculate total income/costs for tax declaration
+4. Generate PIT-8C annex
 
-1. **Simple CLI**: A straightforward command-line interface built using [Typer](https://typer.tiangolo.com/).
-2. **Freedom24 XLSX Support**: Reads Freedom24’s Excel annual tax report files and converts them into a standard format.
-3. **FIFO Matching**: Automatically applies the First-In-First-Out logic to match buy and sell trades (including partial closures).
-4. **Commission Handling**: Splits and sums commissions from both buy and sell sides, proportionally for partial trades.
-5. **PIT-8C**: Generates PIT-8C PDF file with the income and costs values calculated based on the trades provided.
-6. **Audit**: Exports all closed positions (buy date, buy amount, sell date, sell amount, total commission) in a XLSX file for audit.
+*With pit38, she simply runs:*
+```bash
+pit38 freedom24 annual_report_2024.xlsx
+```
+
+The tool automatically:
+- Processes all trades from the XLSX report
+- Matches sales with purchases using FIFO
+- Applies correct NBP exchange rates (even for weekend trades)
+- Generates ready-to-submit [PIT-8C](https://www.pit.pl/pit-8c/) (.pdf file)
+- Creates audit-ready XLSX with all calculations
+
+No more spreadsheet errors or manual rate lookups. 🚀
 
 ---
 
@@ -45,7 +58,7 @@ Currently, it supports **Freedom24**, but the architecture is designed to be ext
    pit38 --help
    ```
 
-### Using Poetry (local repository)
+### Using Poetry (only for developers)
 
 1. Clone this repository:
 
@@ -101,12 +114,11 @@ pit38 freedom24 annual_report_2024.xlsx
 
 ## Testing
 
-We use [pytest](https://docs.pytest.org/) for testing and [Typer Testing](https://typer.tiangolo.com/tutorial/testing/) for CLI tests.
+We use [pytest](https://docs.pytest.org/) for testing. Critical logic parts are covered (e.g. FIFO algorithm, trades parsing).
 
-From the project root:
+To run the tests:
 
 ```bash
-poetry install
 poetry run pytest
 ```
 
