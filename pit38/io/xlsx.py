@@ -33,7 +33,7 @@ def read_trades_from_xlsx(file: Path, sheet_name: str | None = None) -> list[dic
 
 
 def write_closed_positions_to_xlsx(
-    profitable_positions: list[ClosedPosition], loss_positions: list[ClosedPosition], file: Path
+    profit_positions: list[ClosedPosition], loss_positions: list[ClosedPosition], file: Path
 ) -> None:
     """
     Writes the matched buy-sell trades into an XLSX file
@@ -82,7 +82,7 @@ def write_closed_positions_to_xlsx(
             serialize_decimal(pos.costs_pln),
         ]
 
-    for position in sorted(profitable_positions, key=lambda x: (x.isin, x.sell_date)):
+    for position in sorted(profit_positions, key=lambda x: (x.isin, x.sell_date)):
         profit_ws.append(create_row(position))
 
     for position in sorted(loss_positions, key=lambda x: (x.isin, x.sell_date)):

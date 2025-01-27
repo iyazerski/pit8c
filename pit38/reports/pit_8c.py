@@ -27,7 +27,11 @@ def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
     writer = PdfWriter()
 
     # fields mapping
-    fields = {"35_income": str(total_income), "36_costs": str(total_costs), "37_profit": str(profit)}
+    fields = {"35_income": str(total_income), "36_costs": str(total_costs)}
+    if profit >= 0:
+        fields["37_profit"] = str(profit)
+    else:
+        fields["38_loss"] = str(abs(profit))
 
     # copy pages and update form fields
     writer.clone_reader_document_root(reader)

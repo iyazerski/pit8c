@@ -9,7 +9,7 @@ def calculate_profit(closed_positions: list[ClosedPosition]) -> tuple[list[Close
     taking into account exchange rates.
     """
 
-    profitable_positions: list[ClosedPosition] = []
+    profit_positions: list[ClosedPosition] = []
     loss_positions: list[ClosedPosition] = []
 
     for cp in closed_positions:
@@ -25,8 +25,8 @@ def calculate_profit(closed_positions: list[ClosedPosition]) -> tuple[list[Close
         cp.costs_pln = (buy_total_pln + sell_comm_pln).quantize(Decimal("0.01"))
 
         if cp.income_pln - cp.costs_pln >= 0:
-            profitable_positions.append(cp)
+            profit_positions.append(cp)
         else:
             loss_positions.append(cp)
 
-    return profitable_positions, loss_positions
+    return profit_positions, loss_positions
