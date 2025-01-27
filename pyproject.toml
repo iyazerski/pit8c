@@ -1,9 +1,9 @@
 [project]
-name = "pit38"
+name = "pit8c"
 authors = [
     {name = "Ihar Yazerski", email = "ihar.yazerski@gmail.com"},
 ]
-description = "A CLI tool that assists in preparing the PIT-38 declaration based on the annual tax reports from your broker"
+description = "A CLI tool that assists in preparing the PIT-8C declaration based on the annual tax reports from your broker"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT License"}
@@ -16,7 +16,7 @@ version = "0.0.2"
 
 
 [project.urls]
-"Homepage" = "https://github.com/iyazerski/pit38"
+"Homepage" = "https://github.com/iyazerski/pit8c"
 
 
 [build-system]
@@ -25,12 +25,12 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.poetry]
-name = "pit38"
-description = "A CLI tool that assists in preparing the PIT-38 declaration based on the annual tax reports from your broker"
+name = "pit8c"
+description = "A CLI tool that assists in preparing the PIT-8C declaration based on the annual tax reports from your broker"
 authors = ["Ihar Yazerski <ihar.yazerski@gmail.com>"]
 readme = "README.md"
-homepage = "https://github.com/iyazerski/pit38"
-repository = "https://github.com/iyazerski/pit38"
+homepage = "https://github.com/iyazerski/pit8c"
+repository = "https://github.com/iyazerski/pit8c"
 license = "MIT"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -59,7 +59,7 @@ pytest = "^8.3.4"
 
 
 [tool.poetry.scripts]
-pit38 = "pit38.cli:app"
+pit8c = "pit8c.cli:app"
 
 
 [tool.ruff]

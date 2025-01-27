@@ -4,8 +4,8 @@ from typing import Any
 import openpyxl
 from openpyxl import Workbook
 
-from pit38.io.utils import serialize_decimal
-from pit38.models import ClosedPosition
+from pit8c.io.utils import serialize_decimal
+from pit8c.models import ClosedPosition
 
 
 def read_trades_from_xlsx(file: Path, sheet_name: str | None = None) -> list[dict[str, Any]]:

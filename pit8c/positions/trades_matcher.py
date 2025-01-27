@@ -1,4 +1,4 @@
-from pit38.models import ClosedPosition, DirectionEnum, Trade
+from pit8c.models import ClosedPosition, DirectionEnum, Trade
 
 
 def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:

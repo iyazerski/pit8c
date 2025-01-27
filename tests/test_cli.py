@@ -1,6 +1,6 @@
 from typer.testing import CliRunner
 
-from pit38.cli import app
+from pit8c.cli import app
 
 runner = CliRunner()
 

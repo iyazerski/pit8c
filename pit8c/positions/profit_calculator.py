@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from pit38.models import ClosedPosition
+from pit8c.models import ClosedPosition
 
 
 def calculate_profit(closed_positions: list[ClosedPosition]) -> tuple[list[ClosedPosition], list[ClosedPosition]]:

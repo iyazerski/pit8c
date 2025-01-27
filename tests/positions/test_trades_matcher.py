@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from pit38.models import ClosedPosition, DirectionEnum, Trade
-from pit38.positions.trades_matcher import match_trades_fifo
+from pit8c.models import ClosedPosition, DirectionEnum, Trade
+from pit8c.positions.trades_matcher import match_trades_fifo
 
 
 @pytest.mark.parametrize(

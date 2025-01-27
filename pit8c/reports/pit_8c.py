@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pypdf import PdfReader, PdfWriter
 
-from pit38.models import ClosedPosition
+from pit8c.models import ClosedPosition
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 PIT_8C_TXT = TEMPLATES_DIR / "PIT-8C.txt"

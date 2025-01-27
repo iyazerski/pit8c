@@ -1,4 +1,4 @@
-name: Release pit38
+name: Release pit8c
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Build pit38
+    name: Build pit8c
     runs-on: ubuntu-latest
 
     steps:
@@ -43,14 +43,14 @@ jobs:
           path: dist/
 
   publish-to-pypi:
-    name: Publish pit38 to PyPI
+    name: Publish pit8c to PyPI
 
     needs:
       - build
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/pit38
+      url: https://pypi.org/p/pit8c
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
 
@@ -61,12 +61,12 @@ jobs:
           name: python-package-distributions
           path: dist/
 
-      - name: Publish pit38 to PyPI
+      - name: Publish pit8c to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
 
   github-release:
     name: >-
-      Sign the pit38 with Sigstore
+      Sign the pit8c with Sigstore
       and upload them to GitHub Release
     needs:
     - publish-to-pypi

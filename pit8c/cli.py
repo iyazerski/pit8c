@@ -3,9 +3,9 @@ from pathlib import Path
 import typer
 from rich.console import Console
 
-from pit38.brokers.base import SupportedBroker
-from pit38.exceptions import Pit38Exception
-from pit38.main import process_annual_report
+from pit8c.brokers.base import SupportedBroker
+from pit8c.exceptions import pit8cException
+from pit8c.main import process_annual_report
 
 app = typer.Typer(pretty_exceptions_show_locals=False)
 err_console = Console(stderr=True)
@@ -22,7 +22,7 @@ def main(
     """
     try:
         process_annual_report(broker, tax_report_file)
-    except Pit38Exception as e:
+    except pit8cException as e:
         err_console.print(str(e))
         raise typer.Exit(1)
 

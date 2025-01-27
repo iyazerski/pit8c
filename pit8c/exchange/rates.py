@@ -1,5 +1,5 @@
-from pit38.exchange.nbp import NbpExchange
-from pit38.models import ClosedPosition
+from pit8c.exchange.nbp import NbpExchange
+from pit8c.models import ClosedPosition
 
 
 def fill_exchange_rates(closed_positions: list[ClosedPosition]) -> list[ClosedPosition]:

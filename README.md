@@ -1,6 +1,6 @@
-# PIT-38
+# PIT-8C
 
-**PIT-38** is a command-line tool that assists you in preparing the Polish [PIT-38](https://www.pit.pl/pit-38/)
+`pit8c` is a command-line tool that assists you in preparing the Polish [PIT-38](https://www.pit.pl/pit-8c/)
 declaration for investment income. It transforms raw broker reports into tax-ready documents by handling
 complex calculations, currency conversions, and FIFO trade matching - all while adhering to Polish tax regulations.
 
@@ -18,15 +18,16 @@ complex calculations, currency conversions, and FIFO trade matching - all while 
 ---
 
 ## Example Use Case
-*Marta, a Polish investor, made 200+ stock trades in 2024 through Freedom24, including US and EU stocks. To file her PIT-38, she needs to:*
-1. Match each sale to its original purchase
+*Marta, a Polish investor, made 200+ stock trades in 2024 through Freedom24, including US and EU stocks.
+Since Freedom24 is based in Cyprus, it doesn't generate a PIT-8C declaration. So Marta needs to:*
+1. Match each sale to its original purchase (including partial closures)
 2. Convert all foreign amounts to PLN using NBP rates from transaction dates
 3. Calculate total income/costs for tax declaration
-4. Generate PIT-8C annex
+4. Manually fill the PIT-8C declaration
 
-*With pit38, she simply runs:*
+*With pit8c, she simply runs:*
 ```bash
-pit38 freedom24 annual_report_2024.xlsx
+pit8c freedom24 annual_report_2024.xlsx
 ```
 
 The tool automatically:
@@ -49,13 +50,13 @@ No more spreadsheet errors or manual rate lookups. 🚀
 1. Install via `pip`:
 
    ```bash
-   pip install pit38
+   pip install pit8c
    ```
 
-2. Now you can use the `pit38` command:
+2. Now you can use the `pit8c` command:
 
    ```bash
-   pit38 --help
+   pit8c --help
    ```
 
 ### Using Poetry (only for developers)
@@ -63,8 +64,8 @@ No more spreadsheet errors or manual rate lookups. 🚀
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/iyazerski/pit38.git
-   cd pit38
+   git clone https://github.com/iyazerski/pit8c.git
+   cd pit8c
    ```
 
 2. Install dependencies via [Poetry](https://python-poetry.org/):
@@ -76,7 +77,7 @@ No more spreadsheet errors or manual rate lookups. 🚀
 3. To run the CLI:
 
    ```bash
-   pit38 --help
+   pit8c --help
    ```
 
 ---
@@ -88,7 +89,7 @@ No more spreadsheet errors or manual rate lookups. 🚀
 To process your annual tax report (.xlsx file with all the trades made during the year), use:
 
 ```bash
-pit38 <broker> <tax_report_file>
+pit8c <broker> <tax_report_file>
 ```
 
 - **broker**: the broker’s name (lowercase).
@@ -107,7 +108,7 @@ The tool will:
 **Example**:
 
 ```bash
-pit38 freedom24 annual_report_2024.xlsx
+pit8c freedom24 annual_report_2024.xlsx
 ```
 
 ---
@@ -126,7 +127,7 @@ poetry run pytest
 
 ## Contributing
 
-Contributions are welcome! Please open an [issue](https://github.com/iyazerski/pit38/issues) or create a pull request:
+Contributions are welcome! Please open an [issue](https://github.com/iyazerski/pit8c/issues) or create a pull request:
 
 1. **Fork** the repository
 2. **Create a feature branch**

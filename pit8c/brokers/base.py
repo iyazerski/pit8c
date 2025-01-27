@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Protocol
 
-from pit38.models import Trade
+from pit8c.models import Trade
 
 
 class BrokerAdapter(Protocol):

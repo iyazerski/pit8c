@@ -53,6 +53,6 @@ class ClosedPosition(BaseModel):
 
     profit: Decimal = Field(default=Decimal("0"))
 
-    # fields required for PIT-8C and PIT-38
+    # fields required for PIT-8C
     income_pln: Decimal = Field(default=Decimal("0"))
     costs_pln: Decimal = Field(default=Decimal("0"))

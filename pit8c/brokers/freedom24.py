@@ -1,9 +1,9 @@
 from decimal import Decimal
 from typing import Any
 
-from pit38.brokers.base import BrokerAdapter
-from pit38.brokers.utils import parse_commission, parse_date
-from pit38.models import DirectionEnum, Trade
+from pit8c.brokers.base import BrokerAdapter
+from pit8c.brokers.utils import parse_commission, parse_date
+from pit8c.models import DirectionEnum, Trade
 
 
 class Freedom24Adapter(BrokerAdapter):

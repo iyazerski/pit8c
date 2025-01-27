@@ -3,8 +3,8 @@ from decimal import Decimal
 
 import pytest
 
-from pit38.brokers.freedom24 import Freedom24Adapter
-from pit38.models import DirectionEnum
+from pit8c.brokers.freedom24 import Freedom24Adapter
+from pit8c.models import DirectionEnum
 
 
 @pytest.mark.parametrize(
