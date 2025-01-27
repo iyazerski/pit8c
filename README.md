@@ -1,6 +1,6 @@
 # PIT-8C
 
-`pit8c` is a command-line tool that assists you in preparing the Polish [PIT-38](https://www.pit.pl/pit-8c/)
+`pit8c` is a command-line tool that assists you in preparing the Polish [PIT-8C](https://www.pit.pl/pit-8c/)
 declaration for investment income. It transforms raw broker reports into tax-ready documents by handling
 complex calculations, currency conversions, and FIFO trade matching - all while adhering to Polish tax regulations.
 
