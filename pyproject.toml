@@ -7,7 +7,7 @@ description = "A CLI tool that assists in preparing the PIT-8C declaration based
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
     "openpyxl>=3.1.5",
     "pydantic>=2.11.7",

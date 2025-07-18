@@ -316,7 +316,7 @@ wheels = [
 
 [[package]]
 name = "pit8c"
-version = "0.0.3"
+version = "0.0.4"
 source = { editable = "." }
 dependencies = [
     { name = "openpyxl" },
