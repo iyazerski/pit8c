@@ -43,7 +43,7 @@ No more spreadsheet errors or manual rate lookups. 🚀
 
 ## Installation
 
-- **Python 3.10 or later** is required.
+- **Python 3.11 or later** is required.
 
 ### Using `pip` (from `PyPi`)
 
@@ -59,7 +59,7 @@ No more spreadsheet errors or manual rate lookups. 🚀
    pit8c --help
    ```
 
-### Using Poetry (only for developers)
+### Using uv (only for developers)
 
 1. Clone this repository:
 
@@ -68,16 +68,16 @@ No more spreadsheet errors or manual rate lookups. 🚀
    cd pit8c
    ```
 
-2. Install dependencies via [Poetry](https://python-poetry.org/):
+2. Install dependencies via [uv](https://docs.astral.sh/uv/):
 
    ```bash
-   poetry install
+   uv sync
    ```
 
 3. To run the CLI:
 
    ```bash
-   pit8c --help
+   uv run pit8c --help
    ```
 
 ---
@@ -120,7 +120,7 @@ We use [pytest](https://docs.pytest.org/) for testing. Critical logic parts are 
 To run the tests:
 
 ```bash
-poetry run pytest
+uv run pytest
 ```
 
 ---

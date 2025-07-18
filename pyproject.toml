@@ -6,15 +6,8 @@ authors = [
 description = "A CLI tool that assists in preparing the PIT-8C declaration based on the annual tax reports from your broker"
 readme = "README.md"
 requires-python = ">=3.11"
-license = {text = "MIT License"}
-classifiers = [
-    "Programming Language :: Python :: 3",
-    "License :: OSI Approved :: MIT License",
-    "Operating System :: OS Independent",
-]
+license = "MIT"
 version = "0.0.3"
-urls.homepage = "https://github.com/iyazerski/pit8c"
-urls.repository = "https://github.com/iyazerski/pit8c"
 dependencies = [
     "openpyxl>=3.1.5",
     "pydantic>=2.11.7",
@@ -23,12 +16,23 @@ dependencies = [
     "typer>=0.16.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/iyazerski/pit8c"
+Repository = "https://github.com/iyazerski/pit8c"
+
+[project.scripts]
+pit8c = "pit8c.cli:app"
+
 [dependency-groups]
 dev = [
     "ipython>=9.4.0",
     "mypy>=1.17.0",
+    "pytest>=8.4.1",
     "ruff>=0.12.4",
 ]
+
+[tool.uv]
+package = true
 
 [tool.ruff]
 line-length = 120
