@@ -1,7 +1,6 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -25,7 +24,7 @@ class Trade(BaseModel):
     amount: Decimal
     commission_value: Decimal
     commission_currency: str = Field(default="")
-    price: Optional[Decimal] = Field(default=None)
+    price: Decimal | None = Field(default=None)
     trade_num: int = Field(default=0)
 
 
@@ -45,14 +44,14 @@ class ClosedPosition(BaseModel):
     sell_date: datetime
     sell_amount: Decimal
 
-    buy_commission: Decimal = Field(default=Decimal("0"))
-    sell_commission: Decimal = Field(default=Decimal("0"))
+    buy_commission: Decimal = Field(default=Decimal(0))
+    sell_commission: Decimal = Field(default=Decimal(0))
 
-    buy_exchange_rate: Decimal = Field(default=Decimal("0"))
-    sell_exchange_rate: Decimal = Field(default=Decimal("0"))
+    buy_exchange_rate: Decimal = Field(default=Decimal(0))
+    sell_exchange_rate: Decimal = Field(default=Decimal(0))
 
-    profit: Decimal = Field(default=Decimal("0"))
+    profit: Decimal = Field(default=Decimal(0))
 
     # fields required for PIT-8C
-    income_pln: Decimal = Field(default=Decimal("0"))
-    costs_pln: Decimal = Field(default=Decimal("0"))
+    income_pln: Decimal = Field(default=Decimal(0))
+    costs_pln: Decimal = Field(default=Decimal(0))

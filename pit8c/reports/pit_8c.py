@@ -40,5 +40,5 @@ def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
     writer.update_page_form_field_values(writer.pages[0], fields)
 
     # Save filled PDF
-    with open(file, "wb") as f:
+    with file.open("wb") as f:
         writer.write(f)

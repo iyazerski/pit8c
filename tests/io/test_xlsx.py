@@ -1,8 +1,8 @@
 from datetime import datetime
 from decimal import Decimal
+from pathlib import Path
 
 import pytest
-
 from pit8c.io.xlsx import read_trades_from_xlsx, write_closed_positions_to_xlsx
 from pit8c.models import ClosedPosition
 
@@ -16,15 +16,15 @@ from pit8c.models import ClosedPosition
                 ticker="TCK1",
                 currency="USD",
                 buy_date=datetime(2024, 1, 1),
-                quantity=Decimal("10"),
-                buy_amount=Decimal("1000"),
+                quantity=Decimal(10),
+                buy_amount=Decimal(1000),
                 sell_date=datetime(2024, 1, 2),
-                sell_amount=Decimal("1200"),
+                sell_amount=Decimal(1200),
             )
         ],
     ],
 )
-def test_write_and_read_xlsx(tmp_path, closed_positions):
+def test_write_and_read_xlsx(tmp_path: Path, closed_positions: list[ClosedPosition]) -> None:
     test_file = tmp_path / "test_output.xlsx"
 
     write_closed_positions_to_xlsx(closed_positions, [], test_file)

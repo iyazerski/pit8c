@@ -63,7 +63,7 @@ def write_closed_positions_to_xlsx(
     for ws in [profit_ws, loss_ws]:
         ws.append(headers)
 
-    def create_row(pos: ClosedPosition) -> list:
+    def create_row(pos: ClosedPosition) -> list[str]:
         return [
             pos.isin,
             pos.ticker,

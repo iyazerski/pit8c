@@ -1,2 +1,2 @@
-class pit8cException(Exception):
+class Pit8cError(Exception):
     pass

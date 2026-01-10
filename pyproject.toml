@@ -29,6 +29,7 @@ dev = [
     "mypy>=1.17.0",
     "pytest>=8.4.1",
     "ruff>=0.12.4",
+    "types-requests>=2.32.4.20260107",
 ]
 
 [tool.uv]

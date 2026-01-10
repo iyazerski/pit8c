@@ -22,7 +22,7 @@ def parse_commission(commission_str: str) -> tuple[Decimal, str]:
     Parse commission string like '2.28EUR', '2.24USD', etc. into (value, currency).
     If none or empty, returns (Decimal("0"), "").
     """
-    default_commission = Decimal("0"), ""
+    default_commission = Decimal(0), ""
 
     commission_str = commission_str.strip()
     if not commission_str:

@@ -12,7 +12,7 @@ class NbpExchange:
     Provides method to get rate for a specific (date, currency) pair.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._rates: dict[date, dict[str, Decimal]] = {}
 
     def load_year(self, year: int, currencies: set[str]) -> None:
@@ -35,7 +35,7 @@ class NbpExchange:
         currency_indexes = {}
         header_parsed = False
 
-        for line_idx, row in enumerate(reader, start=1):
+        for _line_idx, row in enumerate(reader, start=1):
             if not header_parsed:
                 if not row or "data" not in row[0].lower():
                     continue
@@ -69,7 +69,7 @@ class NbpExchange:
                     try:
                         dec_value = Decimal(raw_val)
                     except InvalidOperation:
-                        dec_value = Decimal("0")
+                        dec_value = Decimal(0)
                     self._rates[file_date][curr] = dec_value
 
     def get_rate_for(self, d: date, currency: str, use_previous_day: bool = True) -> Decimal:
@@ -89,20 +89,16 @@ class NbpExchange:
                 if check_date in self._rates:
                     if currency in self._rates[check_date]:
                         return self._rates[check_date][currency]
-                    else:
-                        raise ValueError(f"Currency {currency} not found for date {check_date}")
+                    raise ValueError(f"Currency {currency} not found for date {check_date}")
                 check_date = check_date - timedelta(days=1)
 
             raise ValueError(f"No exchange rate found for {currency} prior to {d}")
 
-        else:
-            if d in self._rates:
-                if currency in self._rates[d]:
-                    return self._rates[d][currency]
-                else:
-                    raise ValueError(f"Currency {currency} not found for date {d}")
-            else:
-                raise ValueError(f"No exchange rate found for date {d}")
+        if d in self._rates:
+            if currency in self._rates[d]:
+                return self._rates[d][currency]
+            raise ValueError(f"Currency {currency} not found for date {d}")
+        raise ValueError(f"No exchange rate found for date {d}")
 
     def get_rates_for(self, pairs: list[tuple[date, str]]) -> list[Decimal]:
         """

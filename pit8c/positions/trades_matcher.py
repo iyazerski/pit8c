@@ -1,4 +1,18 @@
+from datetime import datetime
+from decimal import Decimal
+from typing import TypedDict
+
 from pit8c.models import ClosedPosition, DirectionEnum, Trade
+
+
+class _OpenPosition(TypedDict):
+    remaining_qty: Decimal
+    buy_date: datetime
+    buy_amount: Decimal
+    buy_comm_value: Decimal
+    buy_comm_currency: str
+    ticker: str
+    currency: str
 
 
 def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
@@ -12,7 +26,7 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
     trades_sorted = sorted(trades, key=lambda t: (t.isin, t.currency, t.trade_num))
 
     # { (isin, currency): [dict with remaining_qty, buy_date, buy_amount, comm_value, ...], ... }
-    open_positions: dict[tuple[str, str], list[dict]] = {}
+    open_positions: dict[tuple[str, str], list[_OpenPosition]] = {}
 
     results: list[ClosedPosition] = []
 

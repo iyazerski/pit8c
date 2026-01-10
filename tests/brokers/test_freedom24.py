@@ -2,13 +2,21 @@ from datetime import datetime
 from decimal import Decimal
 
 import pytest
-
 from pit8c.brokers.freedom24 import Freedom24Adapter
 from pit8c.models import DirectionEnum
 
 
 @pytest.mark.parametrize(
-    "row_input, expected_isin, expected_dir, expected_date, expected_quantity, expected_amount, expected_comm_value, expected_trade_num",
+    (
+        "row_input",
+        "expected_isin",
+        "expected_dir",
+        "expected_date",
+        "expected_quantity",
+        "expected_amount",
+        "expected_comm_value",
+        "expected_trade_num",
+    ),
     [
         (
             {
@@ -26,8 +34,8 @@ from pit8c.models import DirectionEnum
             "TEST123",
             DirectionEnum.buy,
             datetime(2024, 1, 1),
-            Decimal("10"),
-            Decimal("1000"),
+            Decimal(10),
+            Decimal(1000),
             Decimal("2.50"),
             1234,
         ),
@@ -47,23 +55,23 @@ from pit8c.models import DirectionEnum
             "ABC999",
             DirectionEnum.sell,
             datetime(2024, 3, 15),
-            Decimal("3"),
-            Decimal("450"),
+            Decimal(3),
+            Decimal(450),
             Decimal("1.00"),
             999,
         ),
     ],
 )
 def test_freedom24_adapter_minimal(
-    row_input,
-    expected_isin,
-    expected_dir,
-    expected_date,
-    expected_quantity,
-    expected_amount,
-    expected_comm_value,
-    expected_trade_num,
-):
+    row_input: dict[str, object],
+    expected_isin: str,
+    expected_dir: DirectionEnum,
+    expected_date: datetime,
+    expected_quantity: Decimal,
+    expected_amount: Decimal,
+    expected_comm_value: Decimal,
+    expected_trade_num: int,
+) -> None:
     """
     Parametric test to check that Freedom24Adapter correctly parses
     different sets of raw row data into Trade models.
