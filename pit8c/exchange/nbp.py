@@ -32,7 +32,7 @@ class NbpExchange:
         content = response.text.splitlines()
         reader = csv.reader(content, delimiter=";")
 
-        currency_indexes = {}
+        currency_indexes: dict[str, tuple[int, int]] = {}
         header_parsed = False
 
         for _line_idx, row in enumerate(reader, start=1):
@@ -41,11 +41,12 @@ class NbpExchange:
                     continue
 
                 for i, val in enumerate(row):
-                    match = re.match(r"^(\d+)([A-Za-z]+)$", val.strip())
+                    match = re.match(r"^\s*(\d+)\s*([A-Za-z]+)\s*$", val)
                     if match:
+                        unit = int(match.group(1))
                         currency_code = match.group(2).upper()
                         if currency_code in currencies:
-                            currency_indexes[currency_code] = i
+                            currency_indexes[currency_code] = (i, unit)
 
                 header_parsed = True
                 continue
@@ -62,15 +63,15 @@ class NbpExchange:
             if file_date not in self._rates:
                 self._rates[file_date] = {}
 
-            for curr, idx in currency_indexes.items():
+            for curr, (idx, unit) in currency_indexes.items():
                 if idx < len(row):
                     raw_val = row[idx].strip()
                     raw_val = raw_val.replace(",", ".")
                     try:
                         dec_value = Decimal(raw_val)
                     except InvalidOperation:
-                        dec_value = Decimal(0)
-                    self._rates[file_date][curr] = dec_value
+                        continue
+                    self._rates[file_date][curr] = dec_value / Decimal(unit)
 
     def get_rate_for(self, d: date, currency: str, use_previous_day: bool = True) -> Decimal:
         """
@@ -79,6 +80,10 @@ class NbpExchange:
         Otherwise, if that date is not found, raise an error or return 0.
         """
 
+        currency = currency.upper()
+        if currency == "PLN":
+            return Decimal(1)
+
         all_dates = sorted(self._rates.keys())
         if not all_dates:
             raise ValueError("No rates loaded. Call load_year first.")
@@ -86,10 +91,8 @@ class NbpExchange:
         if use_previous_day:
             check_date = d - timedelta(days=1)
             while check_date >= all_dates[0]:
-                if check_date in self._rates:
-                    if currency in self._rates[check_date]:
-                        return self._rates[check_date][currency]
-                    raise ValueError(f"Currency {currency} not found for date {check_date}")
+                if check_date in self._rates and currency in self._rates[check_date]:
+                    return self._rates[check_date][currency]
                 check_date = check_date - timedelta(days=1)
 
             raise ValueError(f"No exchange rate found for {currency} prior to {d}")

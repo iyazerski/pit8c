@@ -3,15 +3,13 @@ from pit8c.models import ClosedPosition
 
 
 def fill_exchange_rates(closed_positions: list[ClosedPosition]) -> list[ClosedPosition]:
-    date_currency_pairs = set()
     years_needed = set()
     currencies_needed = set()
     for cp in closed_positions:
-        date_currency_pairs.add((cp.buy_date.date(), cp.currency))
-        date_currency_pairs.add((cp.sell_date.date(), cp.currency))
-
         years_needed.add(cp.buy_date.year)
         years_needed.add(cp.sell_date.year)
+        years_needed.add(cp.buy_date.year - 1)
+        years_needed.add(cp.sell_date.year - 1)
 
         currencies_needed.add(cp.currency)
 
