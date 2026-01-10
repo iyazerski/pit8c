@@ -7,7 +7,7 @@ description = "A CLI tool that assists in preparing the PIT-8C declaration based
 readme = "README.md"
 requires-python = ">=3.11"
 license = "MIT"
-version = "0.0.4"
+version = "0.0.5"
 dependencies = [
     "openpyxl>=3.1.5",
     "pydantic>=2.11.7",
@@ -34,10 +34,44 @@ dev = [
 [tool.uv]
 package = true
 
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+warn_unreachable = true
+explicit_package_bases = true
+follow_imports = "normal"
+plugins = ["pydantic.mypy"]
+mypy_path = "src"
+exclude = [
+    ".env",
+    ".venv",
+    "venv",
+    ".git",
+    "__pycache__",
+    ".github",
+    ".idea",
+    ".kube",
+    ".mypy_cache",
+]
+
 [tool.ruff]
 line-length = 120
-indent-width = 4
-lint.select = ["ALL"]
-lint.ignore = ["TRY", "PGH", "D", "DOC", "TD", "C90", "FLY", "EM", "G", "PERF401", "DTZ", "RET501", "COM", "S101", "FBT", "PLR2004", "SIM108", "PLR0913", "BLE001", "ANN401", "FIX002", "FA102", "E501", "B905", "PLR0912", "PLR0911", "N999"]
-lint.isort.combine-as-imports = true
-format.quote-style = "double"
+src = ["src"]
+exclude = [
+    ".env",
+    ".venv",
+    "venv",
+    ".git",
+    "__pycache__",
+    ".github",
+    ".idea",
+    ".kube",
+    ".mypy_cache",
+]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["TRY","PGH","D","DOC","TD","C90","FLY","EM","G","PERF401","DTZ","RET501","COM","S101","S105","FBT","PLR2004","SIM108","PLR0913","BLE001","ANN401","FIX002","FA102","E501","B905","PLR0912","PLR0911","N999","PERF203","B019","S311","S608","PLR0915","T201", "PLW0603", "RUF001", "RUF002", "RUF003", "TC001", "TC002", "TC003"]
+
+[tool.ruff.format]
+quote-style = "double"
