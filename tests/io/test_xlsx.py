@@ -3,6 +3,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
+from pit8c.io.utils import serialize_decimal
 from pit8c.io.xlsx import read_trades_from_xlsx, write_closed_positions_to_xlsx
 from pit8c.models import ClosedPosition
 
@@ -42,3 +43,4 @@ def test_write_and_read_xlsx(tmp_path: Path, closed_positions: list[ClosedPositi
         assert row["Quantity"] == str(cp.quantity)
         assert row["BuyAmount"] == str(cp.buy_amount)
         assert row["SellAmount"] == str(cp.sell_amount)
+        assert row["ProfitPLN"] == serialize_decimal(cp.income_pln - cp.costs_pln)

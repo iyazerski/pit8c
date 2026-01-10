@@ -1,20 +1,33 @@
 import re
-from datetime import datetime
+from datetime import date, datetime
 from decimal import Decimal
 
 
-def parse_date(date_str: str) -> datetime | None:
+def parse_date(value: object) -> datetime | None:
     """
-    Parse a string in YYYY-MM-DD format into a datetime.
-    If parsing fails, returns None or raises ValueError.
+    Parse broker-provided dates into a datetime.
     """
-    date_str = date_str.strip()
+    if value is None:
+        return None
+
+    if isinstance(value, datetime):
+        return value
+    if isinstance(value, date):
+        return datetime(value.year, value.month, value.day)
+
+    if not isinstance(value, str):
+        value = str(value)
+
+    date_str = value.strip()
     if not date_str:
         return None
-    try:
-        return datetime.strptime(date_str, "%Y-%m-%d")
-    except ValueError:
-        return None
+
+    for fmt in ("%Y-%m-%d", "%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%dT%H:%M"):
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    return None
 
 
 def parse_commission(commission_str: str) -> tuple[Decimal, str]:

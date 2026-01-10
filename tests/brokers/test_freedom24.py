@@ -90,3 +90,53 @@ def test_freedom24_adapter_minimal(
     assert trade.amount == expected_amount
     assert trade.commission_value == expected_comm_value
     assert trade.trade_num == expected_trade_num
+
+
+def test_freedom24_adapter_prefers_trade_date_over_settlement_date() -> None:
+    """PIT-8C calculations should use transaction date rather than settlement date when available."""
+    adapter = Freedom24Adapter()
+    trades = adapter.parse_trades(
+        [
+            {
+                "ISIN": "TEST123",
+                "Ticker": "TST",
+                "Direction": "Buy",
+                "Currency": "USD",
+                "Trade date": "2024-01-01",
+                "Settlement date": "2024-01-03",
+                "Quantity": 1,
+                "Amount": 100,
+                "Price": 100,
+                "Commission": "0USD",
+                "Trade#": 1,
+            }
+        ]
+    )
+
+    assert len(trades) == 1
+    assert trades[0].date == datetime(2024, 1, 1)
+
+
+def test_freedom24_adapter_parses_fee_column_as_commission() -> None:
+    """Some Freedom24 exports use 'Fee' instead of 'Commission'."""
+    adapter = Freedom24Adapter()
+    trades = adapter.parse_trades(
+        [
+            {
+                "ISIN": "TEST123",
+                "Ticker": "TST",
+                "Direction": "Sell",
+                "Currency": "USD",
+                "Settlement date": "2024-01-03",
+                "Quantity": 1,
+                "Amount": 100,
+                "Price": 100,
+                "Fee": "6.00USD",
+                "Trade#": 1,
+            }
+        ]
+    )
+
+    assert len(trades) == 1
+    assert trades[0].commission_value == Decimal("6.00")
+    assert trades[0].commission_currency == "USD"

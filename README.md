@@ -27,11 +27,11 @@ Since Freedom24 is based in Cyprus, it doesn't generate a PIT-8C declaration. So
 
 *With pit8c, she simply runs:*
 ```bash
-pit8c freedom24 annual_report_2024.xlsx
+pit8c freedom24 ./reports --year 2024
 ```
 
 The tool automatically:
-- Processes all trades from the XLSX report
+- Reads one XLSX report or a directory with multiple annual reports
 - Matches sales with purchases using FIFO
 - Applies correct NBP exchange rates (even for weekend trades)
 - Generates ready-to-submit [PIT-8C](https://www.pit.pl/pit-8c/) (.pdf file)
@@ -86,29 +86,33 @@ No more spreadsheet errors or manual rate lookups. 🚀
 
 ### Processing an Annual Report
 
-To process your annual tax report (.xlsx file with all the trades made during the year), use:
+To calculate PIT-8C for a given tax year, pass either:
+- a single annual report `.xlsx`, or
+- a directory containing multiple annual reports `.xlsx` (recommended, so FIFO can match prior-year buys).
 
 ```bash
-pit8c <broker> <tax_report_file>
+pit8c <broker> <reports_path> --year <tax_year>
 ```
 
 - **broker**: the broker’s name (lowercase).
-- **tax_report_file**: the XLSX file with all your trades downloaded from the supported broker.
+- **reports_path**: path to a single XLSX report or a directory with multiple reports.
+- **tax_year**: the year for which PIT-8C should be calculated (only positions with sell date in that year are included).
 
 The tool will:
 
-1. Read the broker’s XLSX file.
+1. Read one or more broker XLSX files.
 2. Convert all trades (buy and sell) into an internal unified structure based on ISIN and currency.
-3. Apply FIFO matching to determine partial closures.
-4. Compute income and costs for each matched position.
-5. Generate PIT-8C PDF report and save it near the input file.
-6. Print D section of PIT-8C report to console.
-7. Write the closed positions near the input file (for audit).
+3. Apply FIFO matching across all provided years to determine partial closures.
+4. Select only positions closed (sold) in the requested tax year.
+5. Compute income and costs for selected positions.
+6. Generate PIT-8C PDF report and save it near the input path.
+7. Print D section of PIT-8C report to console.
+8. Write the closed positions near the input file (for audit).
 
 **Example**:
 
 ```bash
-pit8c freedom24 annual_report_2024.xlsx
+pit8c freedom24 ./reports --year 2025
 ```
 
 ---

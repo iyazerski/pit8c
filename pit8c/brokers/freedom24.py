@@ -23,16 +23,19 @@ class Freedom24Adapter(BrokerAdapter):
             # Extract raw fields
             isin_raw = (row.get("ISIN") or "").strip()
             ticker_raw = (row.get("Ticker") or "").strip()
-            direction_raw = (row.get("Direction") or "").lower().strip()  # "buy"/"sell"
-            if "buy" in direction_raw:
-                direction_raw = DirectionEnum.buy
-            elif "sell" in direction_raw:
-                direction_raw = DirectionEnum.sell
+            direction_label = (row.get("Direction") or "").lower().strip()  # "buy"/"sell"
+            if "buy" in direction_label:
+                direction = DirectionEnum.buy
+            elif "sell" in direction_label:
+                direction = DirectionEnum.sell
+            else:
+                # Be tolerant to unrelated XLSX files in a directory input (e.g. tool output XLSX).
+                continue
 
             currency_raw = (row.get("Currency") or "").strip()
 
-            date_str = (row.get("Settlement date") or "").strip()
-            dt = parse_date(date_str)  # returns datetime or None
+            # For PIT-8C the relevant date is the transaction (trade) date; settlement date can be T+2.
+            dt = parse_date(row.get("Trade date") or row.get("Settlement date"))  # returns datetime or None
 
             # Quantity, Amount, Price, etc. might be float or None
             qty_val = row.get("Quantity", 0)
@@ -40,7 +43,7 @@ class Freedom24Adapter(BrokerAdapter):
             price_val = row.get("Price", 0)
 
             # Commission (e.g. "2.28EUR" -> (Decimal('2.28'), 'EUR'))
-            comm_str = str(row.get("Commission") or "")
+            comm_str = str(row.get("Commission") or row.get("Fee") or "")
             comm_value, comm_curr = parse_commission(comm_str)
 
             # Trade number
@@ -58,7 +61,7 @@ class Freedom24Adapter(BrokerAdapter):
                 isin=isin_raw,
                 ticker=ticker_raw,
                 currency=currency_raw,
-                direction=DirectionEnum(direction_raw),
+                direction=direction,
                 date=dt,
                 quantity=Decimal(str(qty_val)),
                 amount=Decimal(str(amt_val)),

@@ -57,6 +57,7 @@ def write_closed_positions_to_xlsx(
         "SellCommission",
         "SellExchangeRate",
         "Profit",
+        "ProfitPLN",
         "IncomePLN",
         "CostsPLN",
     ]
@@ -78,6 +79,7 @@ def write_closed_positions_to_xlsx(
             serialize_decimal(pos.sell_commission),
             serialize_decimal(pos.sell_exchange_rate),
             serialize_decimal(pos.profit),
+            serialize_decimal(pos.income_pln - pos.costs_pln),
             serialize_decimal(pos.income_pln),
             serialize_decimal(pos.costs_pln),
         ]
