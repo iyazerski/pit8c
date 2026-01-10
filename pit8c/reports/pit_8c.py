@@ -27,8 +27,6 @@ def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
     # print txt version of PIT-8C to console
     pit_8c_template = PIT_8C_TXT.read_text().strip()
     print(pit_8c_template.format(total_income=str(total_income), costs=str(total_costs), profit=str(profit)))
-    print(f"Broker-like P/L (Σ profit_ccy × sell_rate): {profit_at_sell_rate} zł")
-    print(f"FX impact (broker-like - PIT): {(profit_at_sell_rate - profit).quantize(Decimal('0.01'))} zł")
 
     # load PDF
     reader = PdfReader(PIT_8C_PDF)
