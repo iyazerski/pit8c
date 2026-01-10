@@ -1,3 +1,4 @@
+from collections import deque
 from datetime import datetime
 from decimal import Decimal
 from typing import TypedDict
@@ -34,13 +35,13 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
             t.isin,
             t.currency,
             t.date,
-            t.trade_num,
             0 if t.direction == DirectionEnum.buy else 1,
+            t.trade_num,
         ),
     )
 
-    # { (isin, currency): [dict with remaining_qty, buy_date, buy_amount, comm_value, ...], ... }
-    open_positions: dict[tuple[str, str], list[_OpenPosition]] = {}
+    # { (isin, currency): queue of buy-lots with remaining qty/amount/commission, ... }
+    open_positions: dict[tuple[str, str], deque[_OpenPosition]] = {}
 
     results: list[ClosedPosition] = []
 
@@ -53,14 +54,14 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
         key = (trade.isin, trade.currency)
         if trade.direction == DirectionEnum.buy:
             if key not in open_positions:
-                open_positions[key] = []
+                open_positions[key] = deque()
             open_positions[key].append(
                 {
                     "remaining_qty": trade.quantity,
                     "buy_date": trade.date,
                     "remaining_buy_amount": trade.amount,
                     "remaining_buy_commission": trade.commission_value,
-                    "buy_comm_currency": trade.commission_currency,
+                    "buy_comm_currency": trade.commission_currency or trade.currency,
                     "ticker": trade.ticker,
                     "currency": trade.currency,
                 }
@@ -76,12 +77,18 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
             remaining_sell_qty = trade.quantity
             remaining_sell_amount = trade.amount
             remaining_sell_commission = trade.commission_value
+            sell_comm_currency = trade.commission_currency or trade.currency
             fifo_queue = open_positions[key]
 
-            while remaining_sell_qty > 0 and fifo_queue:
-                current_buy = fifo_queue[0]
+            while remaining_sell_qty > 0:
+                if not fifo_queue:
+                    raise Pit8cError(
+                        f"Sell quantity exceeds available buy lots by {remaining_sell_qty} "
+                        f"(isin={trade.isin}, currency={trade.currency}, trade_num={trade.trade_num})"
+                    )
+
+                current_buy = fifo_queue.popleft()
                 if current_buy["remaining_qty"] <= 0:
-                    fifo_queue.pop(0)
                     continue
 
                 available_buy_qty = current_buy["remaining_qty"]
@@ -107,6 +114,8 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
                     sell_amount=sell_amount_portion,
                     buy_commission=buy_comm_portion,
                     sell_commission=sell_comm_portion,
+                    buy_commission_currency=current_buy["buy_comm_currency"],
+                    sell_commission_currency=sell_comm_currency,
                 )
                 results.append(closed_pos)
 
@@ -117,13 +126,8 @@ def match_trades_fifo(trades: list[Trade]) -> list[ClosedPosition]:
                 remaining_sell_amount = remaining_sell_amount - sell_amount_portion
                 remaining_sell_commission = remaining_sell_commission - sell_comm_portion
 
-                if current_buy["remaining_qty"] <= 0:
-                    fifo_queue.pop(0)
-
-            if remaining_sell_qty > 0:
-                raise Pit8cError(
-                    f"Sell quantity exceeds available buy lots by {remaining_sell_qty} "
-                    f"(isin={trade.isin}, currency={trade.currency}, trade_num={trade.trade_num})"
-                )
+                # Keep the partially consumed lot at the head of the queue for subsequent matches.
+                if current_buy["remaining_qty"] > 0:
+                    fifo_queue.appendleft(current_buy)
 
     return results

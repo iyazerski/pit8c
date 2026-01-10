@@ -151,3 +151,67 @@ def test_fifo_rejects_sell_without_buys() -> None:
 
     with pytest.raises(Pit8cError):
         match_trades_fifo(trades)
+
+
+def test_fifo_sorts_buys_before_sells_for_same_timestamp() -> None:
+    """A buy and sell at the same timestamp should be matched even if trade numbers are out of order."""
+    trades = [
+        Trade(
+            isin="TEST123",
+            trade_num=2,
+            ticker="TST",
+            currency="USD",
+            direction=DirectionEnum.buy,
+            date=datetime(2024, 1, 1, 12, 0, 0),
+            quantity=Decimal(10),
+            amount=Decimal(1000),
+            commission_value=Decimal(10),
+        ),
+        Trade(
+            isin="TEST123",
+            trade_num=1,
+            ticker="TST",
+            currency="USD",
+            direction=DirectionEnum.sell,
+            date=datetime(2024, 1, 1, 12, 0, 0),
+            quantity=Decimal(10),
+            amount=Decimal(1200),
+            commission_value=Decimal(5),
+        ),
+    ]
+
+    closed_positions = match_trades_fifo(trades)
+    assert len(closed_positions) == 1
+
+
+def test_fifo_propagates_commission_currencies() -> None:
+    """Closed positions carry commission currency codes (defaulting to the trade currency when missing)."""
+    trades = [
+        Trade(
+            isin="TEST123",
+            trade_num=1,
+            ticker="TST",
+            currency="USD",
+            direction=DirectionEnum.buy,
+            date=datetime(2024, 1, 1),
+            quantity=Decimal(10),
+            amount=Decimal(1000),
+            commission_value=Decimal(10),
+        ),
+        Trade(
+            isin="TEST123",
+            trade_num=2,
+            ticker="TST",
+            currency="USD",
+            direction=DirectionEnum.sell,
+            date=datetime(2024, 1, 2),
+            quantity=Decimal(10),
+            amount=Decimal(1200),
+            commission_value=Decimal(5),
+            commission_currency="EUR",
+        ),
+    ]
+
+    closed_positions = match_trades_fifo(trades)
+    assert closed_positions[0].buy_commission_currency == "USD"
+    assert closed_positions[0].sell_commission_currency == "EUR"

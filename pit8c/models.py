@@ -47,8 +47,14 @@ class ClosedPosition(BaseModel):
     buy_commission: Decimal = Field(default=Decimal(0))
     sell_commission: Decimal = Field(default=Decimal(0))
 
+    buy_commission_currency: str = Field(default="")
+    sell_commission_currency: str = Field(default="")
+
     buy_exchange_rate: Decimal = Field(default=Decimal(0))
     sell_exchange_rate: Decimal = Field(default=Decimal(0))
+
+    buy_commission_exchange_rate: Decimal = Field(default=Decimal(0))
+    sell_commission_exchange_rate: Decimal = Field(default=Decimal(0))
 
     profit: Decimal = Field(default=Decimal(0))
 
