@@ -1,8 +1,16 @@
-from pit8c.exchange.nbp import NbpExchange
+from pit8c.exchange.provider import ExchangeRatesProvider, NbpExchangeRatesProvider
 from pit8c.models import ClosedPosition
 
 
-def fill_exchange_rates(closed_positions: list[ClosedPosition]) -> list[ClosedPosition]:
+def fill_exchange_rates(
+    closed_positions: list[ClosedPosition],
+    provider: ExchangeRatesProvider | None = None,
+) -> list[ClosedPosition]:
+    """Fill exchange rate fields in-place for each closed position (trade and commission currencies)."""
+
+    if provider is None:
+        provider = NbpExchangeRatesProvider()
+
     years_needed = set()
     currencies_needed = set()
     for cp in closed_positions:
@@ -19,9 +27,7 @@ def fill_exchange_rates(closed_positions: list[ClosedPosition]) -> list[ClosedPo
         currencies_needed.add(buy_comm_currency)
         currencies_needed.add(sell_comm_currency)
 
-    exchange = NbpExchange()
-    for yr in sorted(years_needed):
-        exchange.load_year(yr, currencies_needed)
+    provider.prefetch(years_needed, currencies_needed)
 
     for cp in closed_positions:
         curr = cp.currency
@@ -32,13 +38,9 @@ def fill_exchange_rates(closed_positions: list[ClosedPosition]) -> list[ClosedPo
         cp.buy_commission_currency = buy_comm_curr
         cp.sell_commission_currency = sell_comm_curr
 
-        cp.buy_exchange_rate = exchange.get_rate_for(cp.buy_date.date(), curr, use_previous_day=True)
-        cp.sell_exchange_rate = exchange.get_rate_for(cp.sell_date.date(), curr, use_previous_day=True)
-        cp.buy_commission_exchange_rate = exchange.get_rate_for(
-            cp.buy_date.date(), buy_comm_curr, use_previous_day=True
-        )
-        cp.sell_commission_exchange_rate = exchange.get_rate_for(
-            cp.sell_date.date(), sell_comm_curr, use_previous_day=True
-        )
+        cp.buy_exchange_rate = provider.get_rate(cp.buy_date.date(), curr, use_previous_day=True)
+        cp.sell_exchange_rate = provider.get_rate(cp.sell_date.date(), curr, use_previous_day=True)
+        cp.buy_commission_exchange_rate = provider.get_rate(cp.buy_date.date(), buy_comm_curr, use_previous_day=True)
+        cp.sell_commission_exchange_rate = provider.get_rate(cp.sell_date.date(), sell_comm_curr, use_previous_day=True)
 
     return closed_positions

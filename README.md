@@ -11,6 +11,7 @@ complex calculations, currency conversions, and FIFO trade matching - all while 
 - [Example Use Case](#example-use-case)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Using as a Library](#using-as-a-library)
 - [Testing](#testing)
 - [Contributing](#contributing)
 - [License](#license)
@@ -91,7 +92,7 @@ To calculate PIT-8C for a given tax year, pass either:
 - a directory containing multiple annual reports `.xlsx` (recommended, so FIFO can match prior-year buys).
 
 ```bash
-pit8c <broker> <reports_path> --year <tax_year>
+pit8c --broker <broker> --reports-path <reports_path> --year <tax_year>
 ```
 
 - **broker**: the broker’s name (lowercase).
@@ -112,10 +113,35 @@ The tool will:
 **Example**:
 
 ```bash
-pit8c freedom24 ./reports --year 2025
+pit8c --broker freedom24 --reports-path ./reports --year 2025
 ```
 
 ---
+
+## Using as a Library
+
+Use the `Pit8c` class to run the same pipeline from Python code:
+
+```python
+from pathlib import Path
+from pit8c import Pit8c
+
+pit8c = Pit8c(broker="freedom24")
+result = pit8c.process_reports_path(reports_path=Path("./reports"), tax_year=2024)
+
+print(result.totals.income_pln, result.totals.costs_pln)
+print(result.artifacts.pit8c_pdf_path)
+```
+
+If you already have parsed trades, run the pipeline without reading XLSX:
+
+```python
+from pit8c import Pit8c
+
+# trades: list[Trade]
+pit8c = Pit8c(write_pdf=False, write_xlsx=False)
+result = pit8c.process_trades(trades, tax_year=2024)
+```
 
 ## Testing
 

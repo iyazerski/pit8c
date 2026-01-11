@@ -1,30 +1,31 @@
 from datetime import datetime
 from decimal import Decimal
 
-import pytest
 from pit8c.exchange.rates import fill_exchange_rates
 from pit8c.models import ClosedPosition
 
 
-class _DummyNbpExchange:
+class _DummyProvider:
     def __init__(self) -> None:
-        """Create an exchange stub that records load calls and serves fixed rates."""
-        self.load_calls: list[tuple[int, set[str]]] = []
+        """Create a provider stub that records prefetch calls and serves fixed rates."""
 
-    def load_year(self, year: int, currencies: set[str]) -> None:
-        """Record the requested (year, currencies) for later assertions."""
-        self.load_calls.append((year, set(currencies)))
+        self.prefetch_calls: list[tuple[set[int], set[str]]] = []
 
-    def get_rate_for(self, _d: object, currency: str, use_previous_day: bool = True) -> Decimal:
+    def prefetch(self, years: set[int], currencies: set[str]) -> None:
+        """Record requested years/currencies for later assertions."""
+
+        self.prefetch_calls.append((set(years), set(currencies)))
+
+    def get_rate(self, _d: object, currency: str, *, use_previous_day: bool = True) -> Decimal:
         """Return deterministic rates for requested currencies (previous-day flag ignored)."""
+
         _ = use_previous_day
         return {"USD": Decimal("4.00"), "EUR": Decimal("4.50"), "PLN": Decimal(1)}[currency.upper()]
 
 
-def test_fill_exchange_rates_includes_commission_currencies(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_fill_exchange_rates_includes_commission_currencies() -> None:
     """Commission currencies are loaded and their rates are filled separately from the trade currency."""
-    dummy = _DummyNbpExchange()
-    monkeypatch.setattr("pit8c.exchange.rates.NbpExchange", lambda: dummy)
+    dummy = _DummyProvider()
 
     cp = ClosedPosition(
         isin="TEST123",
@@ -41,10 +42,11 @@ def test_fill_exchange_rates_includes_commission_currencies(monkeypatch: pytest.
         sell_commission_currency="USD",
     )
 
-    fill_exchange_rates([cp])
+    fill_exchange_rates([cp], provider=dummy)
 
-    loaded_currencies = set().union(*(currs for _year, currs in dummy.load_calls))
-    assert {"USD", "EUR"} <= loaded_currencies
+    years, currencies = dummy.prefetch_calls[0]
+    assert 2024 in years
+    assert {"USD", "EUR"} <= currencies
 
     assert cp.buy_exchange_rate == Decimal("4.00")
     assert cp.sell_exchange_rate == Decimal("4.00")

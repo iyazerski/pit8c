@@ -1,50 +1,52 @@
-from decimal import Decimal
 from pathlib import Path
+from typing import Protocol
 
 from pypdf import PdfReader, PdfWriter
 
-from pit8c.models import ClosedPosition
+from pit8c.result import Pit8cTotals
 
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 PIT_8C_TXT = TEMPLATES_DIR / "PIT-8C.txt"
 PIT_8C_PDF = TEMPLATES_DIR / "PIT-8C.pdf"
 
 
-def generate_pit_8c(closed_positions: list[ClosedPosition], file: Path) -> None:
-    total_income = Decimal("0.0")
-    total_costs = Decimal("0.0")
-    profit_at_sell_rate = Decimal("0.0")
-    for cp in closed_positions:
-        total_income += cp.income_pln
-        total_costs += cp.costs_pln
-        profit_at_sell_rate += (cp.sell_amount - cp.buy_amount) * cp.sell_exchange_rate
+class Pit8cReportGenerator(Protocol):
+    """Generates human-readable text and optional PDF artifacts for PIT-8C totals."""
 
-    total_income = total_income.quantize(Decimal("0.01"))
-    total_costs = total_costs.quantize(Decimal("0.01"))
-    profit = (total_income - total_costs).quantize(Decimal("0.01"))
-    profit_at_sell_rate = profit_at_sell_rate.quantize(Decimal("0.01"))
+    def render_text(self, totals: Pit8cTotals) -> str:
+        """Render PIT-8C text representation for console output."""
 
-    # print txt version of PIT-8C to console
-    pit_8c_template = PIT_8C_TXT.read_text().strip()
-    print(pit_8c_template.format(total_income=str(total_income), costs=str(total_costs), profit=str(profit)))
+    def write_pdf(self, totals: Pit8cTotals, file: Path) -> None:
+        """Write a filled PIT-8C PDF file to the provided path."""
 
-    # load PDF
-    reader = PdfReader(PIT_8C_PDF)
-    writer = PdfWriter()
 
-    # fields mapping
-    fields = {"35_income": str(total_income), "36_costs": str(total_costs)}
-    if profit >= 0:
-        fields["37_profit"] = str(profit)
-    else:
-        fields["38_loss"] = str(abs(profit))
+class TemplatePit8cReportGenerator:
+    """PIT-8C report generator based on shipped text and PDF templates."""
 
-    # copy pages and update form fields
-    writer.clone_reader_document_root(reader)
+    def render_text(self, totals: Pit8cTotals) -> str:
+        """Render PIT-8C text from template using aggregated totals."""
 
-    # update fields on the first page
-    writer.update_page_form_field_values(writer.pages[0], fields)
+        pit_8c_template = PIT_8C_TXT.read_text().strip()
+        return pit_8c_template.format(
+            total_income=str(totals.income_pln),
+            costs=str(totals.costs_pln),
+            profit=str(totals.profit_pln),
+        )
 
-    # Save filled PDF
-    with file.open("wb") as f:
-        writer.write(f)
+    def write_pdf(self, totals: Pit8cTotals, file: Path) -> None:
+        """Fill PIT-8C PDF template with totals and write it to disk."""
+
+        reader = PdfReader(PIT_8C_PDF)
+        writer = PdfWriter()
+
+        fields = {"35_income": str(totals.income_pln), "36_costs": str(totals.costs_pln)}
+        if totals.is_profit:
+            fields["37_profit"] = str(totals.profit_pln)
+        else:
+            fields["38_loss"] = str(abs(totals.profit_pln))
+
+        writer.clone_reader_document_root(reader)
+        writer.update_page_form_field_values(writer.pages[0], fields)
+
+        with file.open("wb") as f:
+            writer.write(f)
