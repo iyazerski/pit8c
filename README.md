@@ -1,6 +1,6 @@
 # PIT-8C
 
-`pit8c` is a command-line tool that assists you in preparing the Polish [PIT-8C](https://www.pit.pl/pit-8c/)
+`pit8c` is a Python library and CLI tool that assists you in preparing the Polish [PIT-8C](https://www.pit.pl/pit-8c/)
 declaration for investment income. It transforms raw broker reports into tax-ready documents by handling
 complex calculations, currency conversions, and FIFO trade matching - all while adhering to Polish tax regulations.
 
@@ -10,7 +10,7 @@ complex calculations, currency conversions, and FIFO trade matching - all while 
 
 - [Example Use Case](#example-use-case)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Using as a CLI](#usage)
 - [Using as a Library](#using-as-a-library)
 - [Testing](#testing)
 - [Contributing](#contributing)
@@ -19,7 +19,7 @@ complex calculations, currency conversions, and FIFO trade matching - all while 
 ---
 
 ## Example Use Case
-*Marta, a Polish investor, made 200+ stock trades in 2024 through Freedom24, including US and EU stocks.
+*Marta, a Polish investor, made 200+ stock trades in 2024 and 2025 through Freedom24, including US and EU stocks.
 Since Freedom24 is based in Cyprus, it doesn't generate a PIT-8C declaration. So Marta needs to:*
 1. Match each sale to its original purchase (including partial closures)
 2. Convert all foreign amounts to PLN using NBP rates from transaction dates
@@ -28,7 +28,7 @@ Since Freedom24 is based in Cyprus, it doesn't generate a PIT-8C declaration. So
 
 *With pit8c, she simply runs:*
 ```bash
-pit8c freedom24 ./reports --year 2024
+pit8c --broker freedom24 --reports-path ./reports --year 2025
 ```
 
 The tool automatically:
@@ -83,7 +83,7 @@ No more spreadsheet errors or manual rate lookups. 🚀
 
 ---
 
-## Usage
+## Using as a CLI
 
 ### Processing an Annual Report
 
@@ -96,8 +96,8 @@ pit8c --broker <broker> --reports-path <reports_path> --year <tax_year>
 ```
 
 - **broker**: the broker’s name (lowercase).
-- **reports_path**: path to a single XLSX report or a directory with multiple reports.
-- **tax_year**: the year for which PIT-8C should be calculated (only positions with sell date in that year are included).
+- **reports-path**: path to a single XLSX report or a directory with multiple reports.
+- **year**: the year for which PIT-8C should be calculated (only positions with sell date in that year are included).
 
 The tool will:
 
@@ -127,7 +127,7 @@ from pathlib import Path
 from pit8c import Pit8c
 
 pit8c = Pit8c(broker="freedom24")
-result = pit8c.process_reports_path(reports_path=Path("./reports"), tax_year=2024)
+result = pit8c.process_reports_path(reports_path=Path("./reports"), tax_year=2025)
 
 print(result.totals.income_pln, result.totals.costs_pln)
 print(result.artifacts.pit8c_pdf_path)
@@ -140,7 +140,7 @@ from pit8c import Pit8c
 
 # trades: list[Trade]
 pit8c = Pit8c(write_pdf=False, write_xlsx=False)
-result = pit8c.process_trades(trades, tax_year=2024)
+result = pit8c.process_trades(trades, tax_year=2025)
 ```
 
 ## Testing
