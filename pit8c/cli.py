@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Annotated
 
 import typer
 from rich.console import Console
@@ -10,18 +11,17 @@ from pit8c.main import process_reports_for_tax_year
 app = typer.Typer(pretty_exceptions_show_locals=False)
 err_console = Console(stderr=True)
 
-BROKER_ARG = typer.Argument(..., help="Broker name")
-REPORTS_PATH_ARG = typer.Argument(
-    ...,
-    help="Path to the annual tax report (.xlsx) or a directory with multiple annual reports (.xlsx)",
-)
-
 
 @app.command("main")
 def main(
-    broker: SupportedBroker = BROKER_ARG,
-    reports_path: Path = REPORTS_PATH_ARG,
-    year: int = typer.Option(..., "--year", "-y", help="Tax year to calculate PIT-8C for (based on sell date year)"),
+    broker: Annotated[SupportedBroker, typer.Option(..., help="Broker name")],
+    reports_path: Annotated[
+        Path,
+        typer.Option(
+            ..., help="Path to the annual tax report (.xlsx) or a directory with multiple annual reports (.xlsx)"
+        ),
+    ],
+    year: Annotated[int, typer.Option(..., help="Tax year to calculate PIT-8C for")],
 ) -> None:
     """
     Process the annual tax report using the specified broker adapter,
