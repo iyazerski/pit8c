@@ -26,34 +26,13 @@ pit8c = "pit8c.cli:app"
 [dependency-groups]
 dev = [
     "ipython>=9.4.0",
-    "mypy>=1.17.0",
     "pytest>=8.4.1",
     "ruff>=0.12.4",
-    "types-requests>=2.32.4.20260107",
+    "ty>=0.0.14",
 ]
 
 [tool.uv]
 package = true
-
-[tool.mypy]
-strict = true
-ignore_missing_imports = true
-warn_unreachable = true
-explicit_package_bases = true
-follow_imports = "normal"
-plugins = ["pydantic.mypy"]
-mypy_path = "src"
-exclude = [
-    ".env",
-    ".venv",
-    "venv",
-    ".git",
-    "__pycache__",
-    ".github",
-    ".idea",
-    ".kube",
-    ".mypy_cache",
-]
 
 [tool.ruff]
 line-length = 120
@@ -67,7 +46,6 @@ exclude = [
     ".github",
     ".idea",
     ".kube",
-    ".mypy_cache",
 ]
 
 [tool.ruff.lint]
